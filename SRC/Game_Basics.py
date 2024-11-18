@@ -51,19 +51,18 @@ def redrawAll(app):
 def onKeyPress(app, key):
     # Player1 Action
     #Jump
-    if app.gameOver:
-        return
-    if key == 'w':
-        if app.player1.jump == False:
-            jumpPlay(app.player1)
-    if key == 'up':
-        if app.player2.jump == False:
-            jumpPlay(app.player2)
-    #Shoot the bullet
-    if key == 'g':
-        app.player1.shoot()
-    if key == 'k':
-        app.player2.shoot()
+    if not app.gameOver:
+        if key == 'w':
+            if app.player1.jump == False:
+                jumpPlay(app.player1)
+        if key == 'up':
+            if app.player2.jump == False:
+                jumpPlay(app.player2)
+        #Shoot the bullet
+        if key == 'g':
+            app.player1.shoot()
+        if key == 'k':
+            app.player2.shoot()
     #Restart the game
     if app.gameOver == True:
         if key == 'r':
