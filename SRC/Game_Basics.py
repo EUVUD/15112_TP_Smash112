@@ -51,18 +51,19 @@ def redrawAll(app):
 def onKeyPress(app, key):
     # Player1 Action
     #Jump
-    if app.gameOver == False:
-        if key == 'w':
-            if app.player1.jump == False:
-                jumpPlay(app.player1)
-        if key == 'up':
-            if app.player2.jump == False:
-                jumpPlay(app.player2)
-        #Shoot the bullet
-        if key == 'g':
-            app.player1.shoot()
-        if key == 'k':
-            app.player2.shoot()
+    if app.gameOver:
+        return
+    if key == 'w':
+        if app.player1.jump == False:
+            jumpPlay(app.player1)
+    if key == 'up':
+        if app.player2.jump == False:
+            jumpPlay(app.player2)
+    #Shoot the bullet
+    if key == 'g':
+        app.player1.shoot()
+    if key == 'k':
+        app.player2.shoot()
     #Restart the game
     if app.gameOver == True:
         if key == 'r':
@@ -75,6 +76,8 @@ def jumpPlay(player):
     
 
 def onKeyHold(app, keys):
+    if app.gameOver:
+        return
     # Still Player1 Movement
     if 'a' in keys:
         app.player1.x -= 5
@@ -99,11 +102,10 @@ def onKeyHold(app, keys):
         app.player2.x = 0
 
 def onStep(app):
-    if app.gameOver:
-        return
-    gravSimul(app)
-    bulletFly(app)
-    bulletHit(app)
+    if not app.gameOver:
+        gravSimul(app)
+        bulletFly(app)
+        bulletHit(app)
 
 #Gravity Simulation
 
