@@ -11,7 +11,7 @@ class char:
         self.x = x
         self.y = y
         self.size = size
-        self.jump = False
+        self.jump = True
         self.color = color
         self.dy = 0
         self.direction = direction
