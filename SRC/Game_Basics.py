@@ -27,6 +27,8 @@ def redrawAll(app):
     # draw the character 1
     drawRect(app.player1.x, app.player1.y, app.player1.size,
                  app.player1.size, fill = app.player1.color)
+    drawImage('../Graphics/Donatello_cropped/0-removebg-preview.png', app.player1.x, app.player1.y,
+              width = 37, height = 43)
     if app.player1.direction == 'left':
         drawLine(app.player1.x+app.player1.size, app.player1.y+app.player1.size/2,
                  app.player1.x, app.player1.y+app.player1.size/2, arrowEnd = True)
