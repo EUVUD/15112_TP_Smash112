@@ -22,5 +22,5 @@ class Action(Behavior):
     def __repr__(self):
         return f'Action {self.name}'
 
-    def tick(self, *arg):
-        self.func(*arg)
+    def tick(self):
+        self.func()
