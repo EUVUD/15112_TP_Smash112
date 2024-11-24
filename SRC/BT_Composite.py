@@ -4,10 +4,14 @@ class Composite:
     def __init__(self, name):
         self.children = []
         self.name = name
+
+    def __repr__(self):
+        return f'{self.children}'
     
     def add(self, other):
-        if isinstance(other, Behavior):
+        if isinstance(other, Behavior) or isinstance(other, Composite):
             self.children.append(other)
+
     
 
 class Selector(Composite):
@@ -29,8 +33,6 @@ class Sequence(Composite):
         super().__init__(name)
     
     def tick(self):
-        if self.children == []:
-            raise Exception("Empty Selector")
         for child in self.children:
             childStatus = child.tick()
             if childStatus == 'Failure':

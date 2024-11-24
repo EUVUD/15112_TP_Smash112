@@ -2,6 +2,7 @@ from cmu_graphics import *
 import Game_Char
 import BT_Composite
 import BT_Behavior
+import BT
 
 def onAppStart(app):
     reStart(app)
@@ -163,16 +164,18 @@ def game_onKeyPress(app, key):
         if key == 'h' and app.player1.shuriCD == 0:
             app.player1.shoot()
             app.player1.shuriCD = 15
-        if key == 'g':
+        if key == 'g' and app.player1.attackCD == 0:
             app.player1.attack = True
+            app.player1.attackCD = 15
             if isHit(app.player1, app.player2) and app.player1.attack:
                 app.player2.health -= 1
         # Player2 Action
         if key == 'k' and app.player2.shuriCD == 0:
             app.player2.shoot()
             app.player2.shuriCD = 15
-        if key == 'j':
+        if key == 'j' and app.player2.attackCD == 0:
             app.player2.attack = True
+            app.player2.attackCD = 15
             if isHit(app.player1, app.player2) and app.player2.attack:
                 app.player1.health -= 1
     #Restart the game
@@ -243,13 +246,20 @@ def game_onStep(app):
         app.gameOver = True
     if not app.gameOver:
         if app.aiMode == True:
-            testSequence.tick()
+            BT.btAiPlayer(app).tick()
         gravSimul(app)
         bulletFly(app)
         bulletHit(app)
         spriteInd(app)
         shuriKenCD(app)
+        attackCD(app)
         app.counter += 1
+
+def attackCD(app):
+    if app.player1.attackCD > 0:
+        app.player1.attackCD -= 1
+    if app.player2.attackCD > 0:
+        app.player2.attackCD -= 1
         
 def shuriKenCD(app):
     if app.player1.shuriCD > 0:
@@ -337,7 +347,7 @@ def bulletHit(app):
                        app.player2.x + app.player2.sizeX/2, 
                        app.player2.y + app.player2.sizeY/2)
             < app.projection[i].sizeX/4 + app.player2.sizeX/2):
-            app.player1.health -= 1
+            app.player2.health -= 1
             if app.player2.health == 1:
                 app.projection[i].velocity = 0
             else:
@@ -345,9 +355,109 @@ def bulletHit(app):
         i += 1
 
 
-#Behavior Tree Part(Will be put into another file later)
+
+def shootCD(app):
+    if app.player2.shuriCD == 0:
+        return 'Success'
+    return 'Failure'
+
+def shootRange(app):
+    if app.player1.y == app.player2.y:
+        return 'Success'
+    return 'Failure'
+
+def actualShoot(app):
+    if app.player1.x > app.player2.x:
+        app.player2.direction = 'right'
+        app.player2.shoot()
+        app.player2.shuriCD = 15
+    else:
+        app.player2.direction = 'left'
+        app.player2.shoot()
+        app.player2.shuriCD = 15
+    return 'Success'
+
+def actualJump(app):
+    if app.player2.jump == False:
+        jumpPlay(app.player2)
+        return 'Success'
+    else:
+        return 'Failure'
+    
+def sameHeight(app):
+    if app.player1.y == app.player2.y:
+        return 'Success'
+    elif app.player2.jump:
+        return 'Running'
+    return 'Failure'
+    
+
+#Root
+root = BT_Composite.Selector('root')
+#Composite Node 1
+shootLogic = BT_Composite.Sequence('shootLogic')
+#Node 11
+shoCD = BT_Behavior.Condition(shootCD, 'shoCD', app)
+#Composite Node 12
+jumShoDeter = BT_Composite.Selector('jumShoDeter')
+#Composite Node 121
+plainShoot = BT_Composite.Sequence('plainShoot')
+#Node 1211
+shootRan = BT_Behavior.Condition(shootRange, 'chootRan', app)
+#Node 1212
+actualSho = BT_Behavior.Action(actualShoot, 'actualSho', app)
+#Composite Node 122
+jumpShoot = BT_Composite.Sequence('jumpShoot')
+#Node 1221
+actualJum = BT_Behavior.Action(actualJump, 'actualJum', app)
+#Composite Node 1222
+jumpShootTime = BT_Composite.Sequence('jumpShootTime')
+#Node 12221
+sameHei = BT_Behavior.Condition(sameHeight, 'sameHei', app)
+#Node 12222 (Reptition just for better understanding)
+actualSho = BT_Behavior.Action(actualShoot, 'actualSho', app)
+
+plainShoot.add(shootRan)
+plainShoot.add(actualSho)
+
+jumpShoot.add(actualJum)
+
+jumpShootTime.add(sameHei)
+jumpShootTime.add(actualSho)
+
+jumpShoot.add(jumpShootTime)
+
+jumShoDeter.add(plainShoot)
+jumShoDeter.add(jumpShoot)
+
+shootLogic.add(shoCD)
+shootLogic.add(jumShoDeter)
+
+root.add(shootLogic)
+
+def deterAttack(app):
+    if app.player2.attackCD == 0:
+        return 'Success'
+    return 'Failure'
+
+def actualAttack(app):
+    if app.player1.x > app.player2.x:
+        app.player2.direction = 'right'
+    else:
+        app.player2.direction = 'right'
+    app.player2.attack = True
+    app.player2.attackCD = 15
+    if isHit(app.player1, app.player2) and app.player2.attack:
+        app.player1.health -= 1
+    return 'Success'
+
+def attackRange(app):
+    if isHit(app.player1, app.player2):
+        return 'Success'
+    return 'Failure'
+
 def towardEnemy(app):
-    if abs(app.player1.x - app.player2.x) < 70:
+    if isHit(app.player1, app.player2):
         app.player2.walk = False
         return 'Success'
     else:
@@ -360,19 +470,42 @@ def towardEnemy(app):
             app.player2.walk = True
             app.player2.direction = 'right'
         return 'Running'
-    
-def attackEnemy(app):
-    if abs(app.player1.x - app.player2.x) > 50:
-        app.player2.shoot()
+
+#Node 2
+attackLogic = BT_Composite.Sequence('attackLogic')
+#Node 21
+CDAtt = BT_Behavior.Condition(deterAttack, 'CDAtt', app)
+#Node 22
+directMoveAtt = BT_Composite.Selector('directMoveAtt')
+#Node 221
+directAtt = BT_Composite.Sequence('directAtt')
+#Node 2211
+attackRan = BT_Behavior.Condition(attackRange, 'attackRan', app)
+#Node 2212
+actualAtt = BT_Behavior.Condition(actualAttack, 'actualAtt', app)
+#Node222
+moveAtt = BT_Composite.Sequence('moveAtt')
+#Node 2221
+towardEne = BT_Behavior.Action(towardEnemy, 'towardEne', app)
+#Node 2222
+directAtt1 = BT_Composite.Sequence('direct1Att')
+#Node 22221
+attackRan1 = BT_Behavior.Condition(attackRange, 'attackRan1', app)
+#Node 22222
+actualAtt1 = BT_Behavior.Condition(actualAttack, 'actualAtt1', app)
 
 
-mvTwdEnemy = BT_Behavior.Action(towardEnemy, 'mvTwdEnemy', app)
-attack = BT_Behavior.Action(attackEnemy, 'attack', app)
-
-testSequence = BT_Composite.Sequence('testSequence')
-testSequence.add(mvTwdEnemy)
-testSequence.add(attack)
-
+root.add(attackLogic)
+attackLogic.add(CDAtt)
+attackLogic.add(directMoveAtt)
+directMoveAtt.add(directAtt)
+directAtt.add(attackRan)
+directAtt.add(actualAtt)
+directMoveAtt.add(moveAtt)
+moveAtt.add(towardEne)
+moveAtt.add(directAtt1)
+directAtt1.add(attackRan1)
+directAtt1.add(actualAtt1)
 
 def distance(x1, y1, x2, y2):
     return ((x1-x2)**2+(y1-y2)**2)**0.5

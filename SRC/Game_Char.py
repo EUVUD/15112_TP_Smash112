@@ -16,6 +16,7 @@ class Char:
         self.jump = True
         self.walk = False
         self.attack = False
+        self.attackCD = 0
         self.shuriCD = 0
         self.color = color
         self.dy = 0
