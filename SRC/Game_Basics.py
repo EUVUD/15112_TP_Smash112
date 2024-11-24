@@ -1,5 +1,7 @@
 from cmu_graphics import *
 import Game_Char
+import BT_Composite
+import BT_Behavior
 
 def onAppStart(app):
     reStart(app)
@@ -24,12 +26,22 @@ def redrawAll(app):
     # Draw Background
     drawImage('../Graphics/Background/10615.png', 0, 0, width = app.width, height = app.height)
     # Instruction:
-    drawLabel('Use w, a, s, d to move the orange block', app.width/2, 20, size = 14)
-    drawLabel('Use g to shoot the bullet from orange', app.width/2, 35, size = 14)
-    drawLabel('Use up, left, down, right to move the blue block', app.width/2, 50, size = 14)
-    drawLabel('Use k to shoot the bullet from orange', app.width/2, 65, size = 14)
-    drawLabel('If game over, press r to restart', app.width/2, 80, size = 14)
+    drawLabel('Use w, a, s, d to move the Donatello', app.width/2, 20, size = 14)
+    drawLabel('Use g to shoot the bullet from Donatello', app.width/2, 35, size = 14)
+    drawLabel('Use up, left, down, right to move Leonardo', app.width/2, 50, size = 14)
+    drawLabel('Use k to shoot the bullet from Leonardo', app.width/2, 65, size = 14)
+    drawLabel('Red Circles indicate how many lives left', app.width/2, 80, size = 14)
+    drawLabel('If game over, press r to restart', app.width/2, 95, size = 14)
     drawRect(0, app.ground, app.width, app.height, fill = 'black')
+    #Draw Lives Left
+    #Player 1
+    drawLabel('Donatello health', 70, app.height - 40, fill = 'purple')
+    for i in range(app.player1.health):
+        drawCircle(20+30*i, app.height - 20, 10, fill = 'red')
+    #Player 2
+    drawLabel('Leonardo health', app.width - 70, app.height - 40, fill = 'blue')
+    for i in range(app.player2.health):
+        drawCircle(app.width-30*(i+1), app.height - 20, 10, fill = 'red')
     # Gameover:
     if app.gameOver == True:
         drawLabel('GameOver', app.width/2, app.height/2, fill = 'red', size = 40)
@@ -160,6 +172,8 @@ def onStep(app):
             app.player1WalkInd = (app.player1WalkInd + 1) % len(app.player1.rWalkSprite)
             app.player2StandInd = (app.player2StandInd + 1) % len(app.player2.rStandSprite)
             app.player2WalkInd = (app.player2WalkInd + 1) % len(app.player2.rWalkSprite)
+        if app.counter % 2 == 0:
+            testSequence.tick()
 
 
 #Gravity Simulation
@@ -202,19 +216,59 @@ def bulletFly(app):
 
 # Bullet hit function
 def bulletHit(app):
-    for i in range(len(app.projection)):
+    i = 0
+    while i < len(app.projection):
         if (distance(app.projection[i].x, app.projection[i].y, 
                      app.player1.x+app.player1.sizeX/2, 
                      app.player1.y+app.player1.sizeY/2)
             < app.projection[i].size + app.player1.sizeX/2):
-            app.projection[i].velocity = 0
-            app.gameOver = True
+            if app.player1.health == 1:
+                app.projection[i].velocity = 0
+                app.gameOver = True
+            else:
+                app.player1.health -= 1
+                app.projection.pop(i)
         elif (distance(app.projection[i].x, app.projection[i].y, 
                        app.player2.x + app.player2.sizeX/2, 
                        app.player2.y + app.player2.sizeY/2)
             < app.projection[i].size + app.player2.sizeX/2):
-            app.projection[i].velocity = 0
-            app.gameOver = True
+            if app.player2.health == 1:
+                app.projection[i].velocity = 0
+                app.gameOver = True
+            else:
+                app.player2.health -= 1
+                app.projection.pop(i)
+        i += 1
+
+
+#Behavior Tree Part(Will be put into another file later)
+def towardEnemy(app):
+    if abs(app.player1.x - app.player2.x) < 70:
+        app.player2.walk = False
+        return 'Success'
+    else:
+        if app.player1.x < app.player2.x:
+            app.player2.x -= 5
+            app.player2.walk = True
+            app.player2.direction = 'left'
+        elif app.player1.x > app.player2.x:
+            app.player2.x += 5
+            app.player2.walk = True
+            app.player2.direction = 'right'
+        return 'Running'
+    
+def attackEnemy(app):
+    if abs(app.player1.x - app.player2.x) > 50:
+        app.player2.shoot()
+
+
+mvTwdEnemy = BT_Behavior.Action(towardEnemy, 'mvTwdEnemy', app)
+attack = BT_Behavior.Action(attackEnemy, 'attack', app)
+
+testSequence = BT_Composite.Sequence('testSequence')
+testSequence.add(mvTwdEnemy)
+testSequence.add(attack)
+
 
 
 

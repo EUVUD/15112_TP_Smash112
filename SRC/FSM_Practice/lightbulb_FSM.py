@@ -13,14 +13,14 @@ class LightOff(State):
         print("Light is Off!")
 
 
-class Transition(object):
+class Transition:
     def __init__(self, toState):
         self.toState = toState
 
     def Execute(self):
         print("transitioning")
 
-class SimpleFSM(object):
+class SimpleFSM:
     def __init__(self, char):
         self.char = char
         self.states = {}
@@ -42,7 +42,7 @@ class SimpleFSM(object):
             self.trans = None
         self.curState.Execute()
 
-class Char(object):
+class Char:
     def __init__(self):
         self.FSM = SimpleFSM(self)
         self.LightOn = True

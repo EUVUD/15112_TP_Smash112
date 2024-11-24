@@ -16,7 +16,12 @@ class Selector(Composite):
 
     def tick(self):
         for child in self.children:
-            child.tick()
+            childStatus = child.tick()
+            if childStatus == 'Success':
+                return 'Success'
+            elif childStatus == 'Running':
+                return 'Running'
+        return 'Failure'
 
 
 class Sequence(Composite):
@@ -27,10 +32,9 @@ class Sequence(Composite):
         if self.children == []:
             raise Exception("Empty Selector")
         for child in self.children:
-            if child.tick() == None:
-                pass
-            else:
-                if child.tick() == True:
-                    continue
-                else:
-                    break
+            childStatus = child.tick()
+            if childStatus == 'Failure':
+                return 'Failure'
+            elif childStatus == 'Running':
+                return 'Running'
+        return 'Success'

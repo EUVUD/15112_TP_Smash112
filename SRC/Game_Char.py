@@ -18,6 +18,7 @@ class Char:
         self.dy = 0
         self.direction = direction
         self.bulletList = bulletList
+        self.health = 5
 
     def __repr__(self):
         return f'{self.name} with size {self.size} is at ({self.x},{self.y})'
