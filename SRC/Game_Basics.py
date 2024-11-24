@@ -21,6 +21,7 @@ def reStart(app):
     app.player1 = Game_Char.Donatello(app.width/4, app.height/4,'right', app.projection)
     app.player1StandInd = 0
     app.player1WalkInd = 0
+    app.player1AttackInd = 0
     #Player2 Basic Info and Sprite
     app.player2 = Game_Char.Leonardo(3 * app.width/4, app.height/4,'left', app.projection)
     app.player2StandInd = 0
@@ -74,14 +75,26 @@ def drawPlayer1(app):
         drawCircle(20+30*i, app.height - 20, 10, fill = 'red')
     # draw Player1 with Sprite
     if app.player1.direction == 'left': #Direction Left
-        if app.player1.walk: 
+        if app.player1.attack:
+            imageDimension = getImageSize(app.player1.lAttackSprite[app.player1AttackInd])
+            imageWidth = imageDimension[0]
+            drawImage(app.player1.lAttackSprite[app.player1AttackInd],
+                      app.player1.x, app.player1.y,
+                      width = imageWidth, height = app.player1.sizeY)
+        elif app.player1.walk: 
             drawImage(app.player1.lWalkSprite[app.player1WalkInd], app.player1.x, app.player1.y,
                     width = app.player1.sizeX, height = app.player1.sizeY)
         else: 
             drawImage(app.player1.lStandSprite[app.player1StandInd], app.player1.x, app.player1.y,
                     width = app.player1.sizeX, height = app.player1.sizeY)
     else: # Direction Right or Initial
-        if app.player1.walk:
+        if app.player1.attack:
+            imageDimension = getImageSize(app.player1.rAttackSprite[app.player1AttackInd])
+            imageWidth = imageDimension[0]
+            drawImage(app.player1.rAttackSprite[app.player1AttackInd],
+                      app.player1.x, app.player1.y,
+                      width = imageWidth, height = app.player1.sizeY)
+        elif app.player1.walk:
             drawImage(app.player1.rWalkSprite[app.player1WalkInd], app.player1.x, app.player1.y,
                     width = app.player1.sizeX, height = app.player1.sizeY)
         else:
@@ -147,11 +160,17 @@ def game_onKeyPress(app, key):
                 jumpPlay(app.player2)
         #Shoot the bullet
         # Player1 Action
-        if key == 'h':
+        if key == 'h' and app.player1.shuriCD == 0:
             app.player1.shoot()
+            app.player1.shuriCD = 15
+        if key == 'g':
+            app.player1.attack = True
+            if isHit(app.player1, app.player2) and app.player1.attack:
+                app.player2.health -= 1
         # Player2 Action
-        if key == 'k':
+        if key == 'k' and app.player2.shuriCD == 0:
             app.player2.shoot()
+            app.player2.shuriCD = 15
         if key == 'j':
             app.player2.attack = True
             if isHit(app.player1, app.player2) and app.player2.attack:
@@ -164,11 +183,9 @@ def game_onKeyPress(app, key):
             app.gameOver = False
 
 def isHit(player1, player2):
-    print(distance(player1.x+player1.sizeX/2, player1.y+player1.sizeY/2,
-                player2.x+player2.sizeX/2, player2.y+player2.sizeY/2))
     if (distance(player1.x+player1.sizeX/2, player1.y+player1.sizeY/2,
                 player2.x+player2.sizeX/2, player2.y+player2.sizeY/2)
-                < 30):
+                < 40):
         return True
     else:
         return False
@@ -231,14 +248,25 @@ def game_onStep(app):
         bulletFly(app)
         bulletHit(app)
         spriteInd(app)
+        shuriKenCD(app)
         app.counter += 1
         
+def shuriKenCD(app):
+    if app.player1.shuriCD > 0:
+        app.player1.shuriCD -= 1
+    if app.player2.shuriCD > 0:
+        app.player2.shuriCD -= 1
             
 def spriteInd(app):
     if app.counter % 2 == 0:
             #Player1 Sprite
             app.player1StandInd = (app.player1StandInd + 1) % len(app.player1.rStandSprite)
             app.player1WalkInd = (app.player1WalkInd + 1) % len(app.player1.rWalkSprite)
+            if app.player1.attack:
+                if app.player1AttackInd == len(app.player1.rAttackSprite)-1:
+                    app.player1.attack = False
+                    app.player1AttackInd = 0
+                app.player1AttackInd += 1
 
             #Player2 Sprite
             app.player2StandInd = (app.player2StandInd + 1) % len(app.player2.rStandSprite)
@@ -249,7 +277,7 @@ def spriteInd(app):
                     app.player2AttackInd = 0
                 app.player2AttackInd += 1
 
-            #Player3 Sprite
+            #Shuriken Sprite
             app.bulletRightInd = (app.bulletRightInd + 1) % len(app.rShuriSprite)
             app.bulletLeftInd = (app.bulletLeftInd + 1) % len(app.lShuriSprite)
 
@@ -300,23 +328,19 @@ def bulletHit(app):
                      app.player1.x+app.player1.sizeX/2, 
                      app.player1.y+app.player1.sizeY/2)
             < app.projection[i].sizeX/4 + app.player1.sizeX/2):
+            app.player1.health -= 1
             if app.player1.health == 1:
                 app.projection[i].velocity = 0
-                app.player1.health -= 1
-                app.gameOver = True
             else:
-                app.player1.health -= 1
                 app.projection.pop(i)
         elif (distance(app.projection[i].x, app.projection[i].y, 
                        app.player2.x + app.player2.sizeX/2, 
                        app.player2.y + app.player2.sizeY/2)
             < app.projection[i].sizeX/4 + app.player2.sizeX/2):
+            app.player1.health -= 1
             if app.player2.health == 1:
                 app.projection[i].velocity = 0
-                app.player2.health -= 1
-                app.gameOver = True
             else:
-                app.player2.health -= 1
                 app.projection.pop(i)
         i += 1
 
@@ -348,8 +372,6 @@ attack = BT_Behavior.Action(attackEnemy, 'attack', app)
 testSequence = BT_Composite.Sequence('testSequence')
 testSequence.add(mvTwdEnemy)
 testSequence.add(attack)
-
-
 
 
 def distance(x1, y1, x2, y2):

@@ -16,6 +16,7 @@ class Char:
         self.jump = True
         self.walk = False
         self.attack = False
+        self.shuriCD = 0
         self.color = color
         self.dy = 0
         self.direction = direction
@@ -39,6 +40,8 @@ class Char:
 
 
 class Donatello(Char):
+    rAttackLoc = '../Graphics/Donatello_cropped/donatello_rAttack'
+    lAttackLoc = '../Graphics/Donatello_cropped/donatello_lAttack'
     rStandLoc = '../Graphics/Donatello_cropped/donatello_rStand/'
     rWalkLoc = '../Graphics/Donatello_cropped/donatello_rWalk/'
     lStandLoc = '../Graphics/Donatello_cropped/donatello_lStand/'
@@ -47,6 +50,8 @@ class Donatello(Char):
 
     def __init__(self, x, y, direction, bulletList):
         super().__init__('Donatello', x, y, 37, 43, 'Purple', direction, bulletList)
+        self.rAttackSprite = [f'{Donatello.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
+        self.lAttackSprite = [f'{Donatello.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
         self.rStandSprite = [f'{Donatello.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
         self.rWalkSprite = [f'{Donatello.rWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
         self.lStandSprite = [f'{Donatello.lStandLoc}/{i}-removebg-preview.png' for i in range(12)]
