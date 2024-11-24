@@ -1,8 +1,9 @@
 class bullet:
-    def __init__(self, name, x, y, size, velocity):
+    def __init__(self, name, x, y, velocity):
         self.x = x
         self.y = y
-        self.size = size
+        self.sizeX = 16
+        self.sizeY = 13
         self.velocity = velocity
 
 class Char:
@@ -14,6 +15,7 @@ class Char:
         self.sizeY = sizeY
         self.jump = True
         self.walk = False
+        self.attack = False
         self.color = color
         self.dy = 0
         self.direction = direction
@@ -28,12 +30,13 @@ class Char:
         velocity = None
         if self.direction == 'left':
             xPos = self.x
-            velocity = -10
+            velocity = -7
         else:
             xPos = self.x + self.sizeX
-            velocity = 10
-        newBullet = bullet('bullet', xPos, yPos, 3, velocity)
+            velocity = 7
+        newBullet = bullet('bullet', xPos, yPos, velocity)
         self.bulletList.append(newBullet)
+
 
 class Donatello(Char):
     rStandLoc = '../Graphics/Donatello_cropped/donatello_rStand/'
@@ -50,6 +53,8 @@ class Donatello(Char):
         self.lWalkSprite = [f'{Donatello.lWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
 
 class Leonardo(Char):
+    rAttackLoc = '../Graphics/Leonardo_cropped/leonardo_rAttack'
+    lAttackLoc = '../Graphics/Leonardo_cropped/leonardo_lAttack'
     rStandLoc = '../Graphics/Leonardo_cropped/leonardo_rStand'
     rWalkLoc = '../Graphics/Leonardo_cropped/leonardo_rWalk'
     lStandLoc = '../Graphics/Leonardo_cropped/leonardo_lStand'
@@ -57,6 +62,8 @@ class Leonardo(Char):
 
     def __init__(self, x, y, direction, bulletList):
         super().__init__('Donatello', x, y, 37, 43, 'Blue', direction, bulletList)
+        self.rAttackSprite = [f'{Leonardo.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
+        self.lAttackSprite = [f'{Leonardo.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
         self.rStandSprite = [f'{Leonardo.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
         self.rWalkSprite = [f'{Leonardo.rWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
         self.lStandSprite = [f'{Leonardo.lStandLoc}/{i}-removebg-preview.png' for i in range(12)]
