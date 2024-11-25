@@ -1,3 +1,6 @@
+# All the images included come from this website: 
+# https://www.spriters-resource.com/game_boy_advance/teenagemutantninjaturtlesubisoft/
+
 class bullet:
     def __init__(self, name, x, y, velocity):
         self.x = x
