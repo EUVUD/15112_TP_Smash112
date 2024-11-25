@@ -34,7 +34,7 @@ def reStart(app):
 # Start Screen
 
 def start_redrawAll(app):
-    drawImage('/home/david_biolover/Documents/15112_TP/15112_TP_Smash112/Graphics/Background/beginBg.webp',
+    drawImage('../Graphics/Background/beginBg.webp',
               0, 0, width = app.width, height = app.height)
     drawLabel('Welcome to Smash-112', 200, 160, size=24, bold=True, fill = 'lightgreen')
     drawLabel('Press a to enter AI player mode', 200, 200, size=24, fill = 'lightgreen')
