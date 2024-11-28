@@ -7,9 +7,6 @@ import BT_Behavior
 import BT_Composite
 
 def btAiPlayer(app):
-    def jumpPlay(player):
-        player.jump = True
-        player.dy = -35
     def isHit(player1, player2):
         if (distance(player1.x+player1.sizeX/2, player1.y+player1.sizeY/2,
                     player2.x+player2.sizeX/2, player2.y+player2.sizeY/2)
@@ -31,17 +28,15 @@ def btAiPlayer(app):
     def actualShoot(app):
         if app.player1.x > app.player2.x:
             app.player2.direction = 'right'
-            app.player2.shoot()
-            app.player2.shuriCD = 15
+            app.player2.shootChr()
         else:
             app.player2.direction = 'left'
-            app.player2.shoot()
-            app.player2.shuriCD = 15
+            app.player2.shootChr()
         return 'Success'
 
     def actualJump(app):
         if app.player2.jump == False:
-            jumpPlay(app.player2)
+            app.player2.jumpChr()
             return 'Success'
         else:
             return 'Failure'
@@ -106,11 +101,10 @@ def btAiPlayer(app):
         if app.player1.x > app.player2.x:
             app.player2.direction = 'right'
         else:
-            app.player2.direction = 'right'
-        app.player2.attack = True
-        app.player2.attackCD = 15
+            app.player2.direction = 'left'
+        app.player2.attackChr()
         if isHit(app.player1, app.player2) and app.player2.attack:
-            app.player1.health -= 1
+                app.player1.health -= 1
         return 'Success'
 
     def attackRange(app):

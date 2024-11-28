@@ -4,10 +4,13 @@
 
 from cmu_graphics import *
 import Game_Char
+import Game_Steps
 import BT
 
 def onAppStart(app):
     reStart(app)
+    app.width = 600
+    app.height = 600
     app.gameOver = False
     app.rShuriLoc = '../Graphics/Shuriken/rShuriken'
     app.lShuriLoc = '../Graphics/Shuriken/lShuriken'
@@ -18,7 +21,7 @@ def onAppStart(app):
 def reStart(app):
     app.aiMode = None
     app.counter = 0
-    app.ground = 300
+    app.ground = 450
     app.projection = []
     #Player1 Basic Info and Sprite
     app.player1 = Game_Char.Donatello(app.width/4, app.height/4,'right', app.projection)
@@ -39,9 +42,12 @@ def reStart(app):
 def start_redrawAll(app):
     drawImage('../Graphics/Background/beginBg.webp',
               0, 0, width = app.width, height = app.height)
-    drawLabel('Welcome to Smash-112', 200, 160, size=24, bold=True, fill = 'lightgreen')
-    drawLabel('Press a to enter AI player mode', 200, 200, size=24, fill = 'lightgreen')
-    drawLabel('Press m to enter Multi-player mode', 200, 240, size=24, fill = 'lightgreen')
+    drawLabel('Welcome to Smash-112', app.width/2, app.height/5, size=40, 
+              bold=True, fill = 'lightgreen')
+    drawLabel('Press a to enter AI player mode', app.width/2, app.height/5*2, 
+              size=24, fill = 'lightgreen')
+    drawLabel('Press m to enter Multi-player mode', app.width/2, app.height/5*3, 
+              size=24, fill = 'lightgreen')
 
 def start_onKeyPress(app, key):
     if key == 'a' or key == 'm':
@@ -71,7 +77,16 @@ def drawInstruction(app):
     drawRect(0, app.ground, app.width, app.height, fill = 'black')
     # Gameover:
     if app.gameOver == True:
-        drawLabel('GameOver', app.width/2, app.height/2, fill = 'red', size = 40)
+        if app.aiMode == True:
+            if app.player2.health == 0:
+                drawLabel('You Win!', app.width/2, app.height/2, fill = 'red', size = 40)
+            else:
+                drawLabel('You Lose', app.width/2, app.height/2, fill = 'red', size = 40)
+        else:
+            if app.player1.health == 0:
+                drawLabel('Player1 Win!', app.width/2, app.height/2, fill = 'red', size = 40)
+            else:
+                drawLabel('Player2 Win!', app.width/2, app.height/2, fill = 'red', size = 40)
 
 def drawPlayer1(app):
     #Draw Player 1 lives left
@@ -85,26 +100,32 @@ def drawPlayer1(app):
             imageWidth = imageDimension[0]
             drawImage(app.player1.lAttackSprite[app.player1AttackInd],
                       app.player1.x, app.player1.y,
-                      width = imageWidth, height = app.player1.sizeY)
+                      width = imageWidth, height = app.player1.sizeY,
+                      align = 'center')
         elif app.player1.walk: 
             drawImage(app.player1.lWalkSprite[app.player1WalkInd], app.player1.x, app.player1.y,
-                    width = app.player1.sizeX, height = app.player1.sizeY)
+                    width = app.player1.sizeX, height = app.player1.sizeY,
+                    align = 'center')
         else: 
             drawImage(app.player1.lStandSprite[app.player1StandInd], app.player1.x, app.player1.y,
-                    width = app.player1.sizeX, height = app.player1.sizeY)
+                    width = app.player1.sizeX, height = app.player1.sizeY,
+                    align = 'center')
     else: # Direction Right or Initial
         if app.player1.attack:
             imageDimension = getImageSize(app.player1.rAttackSprite[app.player1AttackInd])
             imageWidth = imageDimension[0]
             drawImage(app.player1.rAttackSprite[app.player1AttackInd],
                       app.player1.x, app.player1.y,
-                      width = imageWidth, height = app.player1.sizeY)
+                      width = imageWidth, height = app.player1.sizeY,
+                      align = 'center')
         elif app.player1.walk:
             drawImage(app.player1.rWalkSprite[app.player1WalkInd], app.player1.x, app.player1.y,
-                    width = app.player1.sizeX, height = app.player1.sizeY)
+                    width = app.player1.sizeX, height = app.player1.sizeY,
+                    align = 'center')
         else:
             drawImage(app.player1.rStandSprite[app.player1StandInd], app.player1.x, app.player1.y,
-                    width = app.player1.sizeX, height = app.player1.sizeY)
+                    width = app.player1.sizeX, height = app.player1.sizeY,
+                    align = 'center')
     
     
 def drawPlayer2(app):
@@ -120,66 +141,69 @@ def drawPlayer2(app):
             imageWidth = imageDimension[0]
             drawImage(app.player2.rAttackSprite[app.player2AttackInd],
                       app.player2.x, app.player2.y,
-                      width = imageWidth, height = app.player2.sizeY)
+                      width = imageWidth, height = app.player2.sizeY,
+                      align = 'center')
         elif app.player2.walk: #Walk
             drawImage(app.player2.rWalkSprite[app.player2WalkInd], app.player2.x, app.player2.y,
-                    width = app.player2.sizeX, height = app.player2.sizeY)
+                    width = app.player2.sizeX, height = app.player2.sizeY,
+                    align = 'center')
         else: #Walk
             drawImage(app.player2.rStandSprite[app.player2StandInd], app.player2.x, app.player2.y,
-                    width = app.player2.sizeX, height = app.player2.sizeY)
+                    width = app.player2.sizeX, height = app.player2.sizeY,
+                    align = 'center')
     else:
         if app.player2.attack:
             imageDimension = getImageSize(app.player2.lAttackSprite[app.player2AttackInd])
             imageWidth = imageDimension[0]
             drawImage(app.player2.lAttackSprite[app.player2AttackInd],
                       app.player2.x, app.player2.y,
-                      width = imageWidth, height = app.player2.sizeY)
+                      width = imageWidth, height = app.player2.sizeY,
+                      align = 'center')
         elif app.player2.walk:
             drawImage(app.player2.lWalkSprite[app.player2WalkInd], app.player2.x, app.player2.y,
-                    width = app.player2.sizeX, height = app.player2.sizeY)
+                    width = app.player2.sizeX, height = app.player2.sizeY,
+                    align = 'center')
         else:
             drawImage(app.player2.lStandSprite[app.player2StandInd], app.player2.x, app.player2.y,
-                    width = app.player2.sizeX, height = app.player2.sizeY)
+                    width = app.player2.sizeX, height = app.player2.sizeY,
+                    align = 'center')
 
 
 def drawBullet(app):
     for bullet in app.projection:
         if bullet.velocity > 0:
-            drawImage(app.rShuriSprite[app.bulletRightInd], bullet.x - bullet.sizeX/2, 
-                      bullet.y - bullet.sizeY/2, width = bullet.sizeX, height = bullet.sizeY)
+            drawImage(app.rShuriSprite[app.bulletRightInd], bullet.x, 
+                      bullet.y, width = bullet.sizeX, height = bullet.sizeY,
+                      align = 'center')
         else:
-            drawImage(app.lShuriSprite[app.bulletLeftInd], bullet.x - bullet.sizeX/2, 
-                      bullet.y - bullet.sizeY/2, width = bullet.sizeX, height = bullet.sizeY)
+            drawImage(app.lShuriSprite[app.bulletLeftInd], bullet.x, 
+                      bullet.y, width = bullet.sizeX, height = bullet.sizeY,
+                      align = 'center')
 
 def game_onKeyPress(app, key):
-    
-    #Jump
     if not app.gameOver:
+        #Jump
         # Player1 Action
         if key == 'w':
             if app.player1.jump == False:
-                jumpPlay(app.player1)
+                app.player1.jumpChr()
         # Player2 Action
         if key == 'up':
             if app.player2.jump == False:
-                jumpPlay(app.player2)
+                app.player2.jumpChr()
         #Shoot the bullet
         # Player1 Action
         if key == 'h' and app.player1.shuriCD == 0:
-            app.player1.shoot()
-            app.player1.shuriCD = 15
+            app.player1.shootChr()
         if key == 'g' and app.player1.attackCD == 0:
-            app.player1.attack = True
-            app.player1.attackCD = 15
+            app.player1.attackChr()
             if isHit(app.player1, app.player2) and app.player1.attack:
                 app.player2.health -= 1
         # Player2 Action
         if key == 'k' and app.player2.shuriCD == 0:
-            app.player2.shoot()
-            app.player2.shuriCD = 15
+            app.player2.shootChr()
         if key == 'j' and app.player2.attackCD == 0:
-            app.player2.attack = True
-            app.player2.attackCD = 15
+            app.player2.attackChr()
             if isHit(app.player1, app.player2) and app.player2.attack:
                 app.player1.health -= 1
     #Restart the game
@@ -192,14 +216,10 @@ def game_onKeyPress(app, key):
 def isHit(player1, player2):
     if (distance(player1.x+player1.sizeX/2, player1.y+player1.sizeY/2,
                 player2.x+player2.sizeX/2, player2.y+player2.sizeY/2)
-                < 40):
+                < 50):
         return True
     else:
         return False
-
-def jumpPlay(player):
-    player.jump = True
-    player.dy = -35
     
 
 def game_onKeyHold(app, keys):
@@ -246,117 +266,19 @@ def game_onKeyRelease(app, key):
 
 
 def game_onStep(app):
-    if app.player1.health == 0 or app.player2.health == 0:
-        app.gameOver = True
     if not app.gameOver:
         if app.aiMode == True:
             BT.btAiPlayer(app).tick()
-        gravSimul(app)
-        bulletFly(app)
-        bulletHit(app)
-        spriteInd(app)
-        shuriKenCD(app)
-        attackCD(app)
+        Game_Steps.deterGameOver(app)
+        Game_Steps.gravSimul(app)
+        Game_Steps.bulletFly(app)
+        Game_Steps.bulletHit(app)
+        Game_Steps.spriteInd(app)
+        Game_Steps.shuriKenCD(app)
+        Game_Steps.attackCD(app)
         app.counter += 1
 
-def attackCD(app):
-    if app.player1.attackCD > 0:
-        app.player1.attackCD -= 1
-    if app.player2.attackCD > 0:
-        app.player2.attackCD -= 1
-        
-def shuriKenCD(app):
-    if app.player1.shuriCD > 0:
-        app.player1.shuriCD -= 1
-    if app.player2.shuriCD > 0:
-        app.player2.shuriCD -= 1
-            
-def spriteInd(app):
-    if app.counter % 2 == 0:
-            #Player1 Sprite
-            app.player1StandInd = (app.player1StandInd + 1) % len(app.player1.rStandSprite)
-            app.player1WalkInd = (app.player1WalkInd + 1) % len(app.player1.rWalkSprite)
-            if app.player1.attack:
-                if app.player1AttackInd == len(app.player1.rAttackSprite)-1:
-                    app.player1.attack = False
-                    app.player1AttackInd = 0
-                app.player1AttackInd += 1
 
-            #Player2 Sprite
-            app.player2StandInd = (app.player2StandInd + 1) % len(app.player2.rStandSprite)
-            app.player2WalkInd = (app.player2WalkInd + 1) % len(app.player2.rWalkSprite)
-            if app.player2.attack:
-                if app.player2AttackInd == len(app.player2.rAttackSprite)-1:
-                    app.player2.attack = False
-                    app.player2AttackInd = 0
-                app.player2AttackInd += 1
-
-            #Shuriken Sprite
-            app.bulletRightInd = (app.bulletRightInd + 1) % len(app.rShuriSprite)
-            app.bulletLeftInd = (app.bulletLeftInd + 1) % len(app.lShuriSprite)
-
-
-#Gravity Simulation
-
-def gravSimul(app):
-    # Player 1 Sim
-    if app.player1.jump == True:
-        app.player1.dy += 2
-        app.player1.y += app.player1.dy
-    # In the air, the player keeps falling
-    if app.player1.y < app.ground - app.player1.sizeY:
-        app.player1.y += 10
-    else: # Stay on ground
-        app.player1.y = app.ground - app.player1.sizeY
-    if app.player1.y >= app.ground - app.player1.sizeY:
-        app.player1.jump = False
-
-    # Player 2 Sim
-    if app.player2.jump == True:
-        app.player2.dy += 2
-        app.player2.y += app.player2.dy
-    # In the air, the player keeps falling
-    if app.player2.y < app.ground - app.player2.sizeY:
-        app.player2.y += 10
-    else: # Stay on ground
-        app.player2.y = app.ground - app.player2.sizeY
-    if app.player2.y >= app.ground - app.player2.sizeY:
-        app.player2.jump = False
-
-#Bullet fly function
-def bulletFly(app):
-    index = 0
-    while index < len(app.projection):
-        app.projection[index].x += app.projection[index].velocity
-        if app.projection[index].x - app.projection[index].sizeX < 0:
-            app.projection.pop(index)
-        elif app.projection[index].x + app.projection[index].sizeX > app.width:
-            app.projection.pop(index)
-        index += 1
-
-# Bullet hit function
-def bulletHit(app):
-    i = 0
-    while i < len(app.projection):
-        if (distance(app.projection[i].x, app.projection[i].y, 
-                     app.player1.x+app.player1.sizeX/2, 
-                     app.player1.y+app.player1.sizeY/2)
-            < app.projection[i].sizeX/4 + app.player1.sizeX/2):
-            app.player1.health -= 1
-            if app.player1.health == 1:
-                app.projection[i].velocity = 0
-            else:
-                app.projection.pop(i)
-        elif (distance(app.projection[i].x, app.projection[i].y, 
-                       app.player2.x + app.player2.sizeX/2, 
-                       app.player2.y + app.player2.sizeY/2)
-            < app.projection[i].sizeX/4 + app.player2.sizeX/2):
-            app.player2.health -= 1
-            if app.player2.health == 1:
-                app.projection[i].velocity = 0
-            else:
-                app.projection.pop(i)
-        i += 1
 
 
 def distance(x1, y1, x2, y2):

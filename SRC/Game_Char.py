@@ -26,40 +26,49 @@ class Char:
         self.direction = direction
         self.bulletList = bulletList
         self.health = 5
+        self.attackComb = 1
 
     def __repr__(self):
         return f'{self.name} with size {self.size} is at ({self.x},{self.y})'
     
-    def shoot(self):
-        yPos = self.y + self.sizeY/2
+    def shootChr(self):
+        yPos = self.y
         velocity = None
         if self.direction == 'left':
-            xPos = self.x
+            xPos = self.x - self.sizeX
             velocity = -7
         else:
             xPos = self.x + self.sizeX
             velocity = 7
         newBullet = bullet('bullet', xPos, yPos, velocity)
         self.bulletList.append(newBullet)
+        self.shuriCD = 15
+
+    def attackChr(self):
+        self.attack = True
+        self.attackCD = 15
+
+    def jumpChr(self):
+        self.jump = True
+        self.dy = -35
 
 
 class Donatello(Char):
-    rAttackLoc = '../Graphics/Donatello_cropped/donatello_rAttack'
-    lAttackLoc = '../Graphics/Donatello_cropped/donatello_lAttack'
-    rStandLoc = '../Graphics/Donatello_cropped/donatello_rStand/'
-    rWalkLoc = '../Graphics/Donatello_cropped/donatello_rWalk/'
-    lStandLoc = '../Graphics/Donatello_cropped/donatello_lStand/'
-    lWalkLoc = '../Graphics/Donatello_cropped/donatello_lWalk/'
-
-
     def __init__(self, x, y, direction, bulletList):
         super().__init__('Donatello', x, y, 37, 43, 'Purple', direction, bulletList)
-        self.rAttackSprite = [f'{Donatello.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
-        self.lAttackSprite = [f'{Donatello.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
-        self.rStandSprite = [f'{Donatello.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
-        self.rWalkSprite = [f'{Donatello.rWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
-        self.lStandSprite = [f'{Donatello.lStandLoc}/{i}-removebg-preview.png' for i in range(12)]
-        self.lWalkSprite = [f'{Donatello.lWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
+        self.rAttackLoc = f'../Graphics/Donatello_cropped/donatello_rAttack{self.attackComb}'
+        self.lAttackLoc = '../Graphics/Donatello_cropped/donatello_lAttack'
+        self.rStandLoc = '../Graphics/Donatello_cropped/donatello_rStand/'
+        self.rWalkLoc = '../Graphics/Donatello_cropped/donatello_rWalk/'
+        self.lStandLoc = '../Graphics/Donatello_cropped/donatello_lStand/'
+        self.lWalkLoc = '../Graphics/Donatello_cropped/donatello_lWalk/'
+        self.rAttackSprite = [f'{self.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
+        self.lAttackSprite = [f'{self.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
+        self.rStandSprite = [f'{self.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
+        self.rWalkSprite = [f'{self.rWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
+        self.lStandSprite = [f'{self.lStandLoc}/{i}-removebg-preview.png' for i in range(12)]
+        self.lWalkSprite = [f'{self.lWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
+
 
 class Leonardo(Char):
     rAttackLoc = '../Graphics/Leonardo_cropped/leonardo_rAttack'
