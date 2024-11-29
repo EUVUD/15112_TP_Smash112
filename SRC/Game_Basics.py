@@ -110,12 +110,22 @@ def drawInstruction(app):
 
 def drawPlayer1(app):
     #Draw Player 1 lives left
-    drawLabel('Donatello health', 70, app.height - 40, fill = 'purple')
-    for i in range(app.player1.health):
-        drawCircle(20+30*i, app.height - 20, 10, fill = 'red')
+    headDim = getImageSize(app.player1.headLoc)
+    # Background
+    drawRect(0, app.height - headDim[1]*1.5, 200, headDim[1]*1.5, fill = 'purple')
+    drawLabel(f'{app.player1.name}', 70, app.height - 60, fill = 'purple', size = 20)
+    drawRect(headDim[0]*1.5, app.height - headDim[1]*1.5 + 5,
+             app.player1.health/5*150+0.1, headDim[1]*1.5 - 10, fill = 'red',
+             border = 'silver', borderWidth = 2)
+    #Head Profile
+    drawImage(app.player1.headLoc, 0, app.height - headDim[1]*1.5, 
+              width = headDim[0]*1.5, height = headDim[1]*1.5)
     # draw Player1 with Sprite
     if app.player1.direction == 'left': #Direction Left
-        if app.player1.attack:
+        if app.player1.defend == True:
+            drawCircle(app.player1.x, app.player1.y, 30, fill = 'red', opacity = 20, border = 'silver')
+            drawImage(app.player1.lDefLoc, app.player1.x, app.player1.y, align = 'center')
+        elif app.player1.attack:
             imageDimension = getImageSize(app.player1.lAttackSprite[app.player1AttackInd])
             imageWidth = imageDimension[0]
             drawImage(app.player1.lAttackSprite[app.player1AttackInd],
@@ -131,7 +141,10 @@ def drawPlayer1(app):
                     width = app.player1.sizeX, height = app.player1.sizeY,
                     align = 'center')
     else: # Direction Right or Initial
-        if app.player1.attack:
+        if app.player1.defend == True:
+            drawCircle(app.player1.x, app.player1.y, 30, fill = 'red', opacity = 20, border = 'silver')
+            drawImage(app.player1.rDefLoc, app.player1.x, app.player1.y, align = 'center')
+        elif app.player1.attack:
             imageDimension = getImageSize(app.player1.rAttackSprite[app.player1AttackInd])
             imageWidth = imageDimension[0]
             drawImage(app.player1.rAttackSprite[app.player1AttackInd],
@@ -148,15 +161,35 @@ def drawPlayer1(app):
                     align = 'center')
     
     
+    
 def drawPlayer2(app):
     #Draw Player 2 lives left
     drawLabel('Leonardo health', app.width - 70, app.height - 40, fill = 'blue')
     for i in range(app.player2.health):
         drawCircle(app.width-30*(i+1), app.height - 20, 10, fill = 'red')
+    headDim = getImageSize(app.player1.headLoc)
+    # Background
+    drawRect(app.width - 200, app.height - headDim[1]*1.5, 200, headDim[1]*1.5, 
+             fill = 'blue')
+    drawLabel(f'{app.player2.name}', app.width - 70, app.height - 60,
+              fill = 'blue', size = 20)
+    drawRect(app.width - headDim[0]*1.5 - (app.player2.health/5*150), 
+             app.height - headDim[1]*1.5 + 5,
+             app.player2.health/5*150+0.1, 
+             headDim[1]*1.5 - 10, fill = 'red',
+             border = 'silver', borderWidth = 2)
+    #Head Profile
+    drawImage(app.player2.headLoc, 
+              app.width - headDim[0]*1.5, 
+              app.height - headDim[1]*1.5, 
+              width = headDim[0]*1.5, height = headDim[1]*1.5)
 
     # draw Player2 with Sprite
     if app.player2.direction == 'right':
-        if app.player2.attack:
+        if app.player2.defend == True:
+            drawCircle(app.player2.x, app.player2.y, 30, fill = 'red', opacity = 20, border = 'silver')
+            drawImage(app.player2.rDefLoc, app.player2.x, app.player2.y, align = 'center')
+        elif app.player2.attack:
             imageDimension = getImageSize(app.player2.rAttackSprite[app.player2AttackInd])
             imageWidth = imageDimension[0]
             drawImage(app.player2.rAttackSprite[app.player2AttackInd],
@@ -172,7 +205,10 @@ def drawPlayer2(app):
                     width = app.player2.sizeX, height = app.player2.sizeY,
                     align = 'center')
     else:
-        if app.player2.attack:
+        if app.player2.defend == True:
+            drawCircle(app.player2.x, app.player2.y, 30, fill = 'red', opacity = 20, border = 'silver')
+            drawImage(app.player2.lDefLoc, app.player2.x, app.player2.y, align = 'center')
+        elif app.player2.attack:
             imageDimension = getImageSize(app.player2.lAttackSprite[app.player2AttackInd])
             imageWidth = imageDimension[0]
             drawImage(app.player2.lAttackSprite[app.player2AttackInd],
@@ -203,29 +239,31 @@ def drawBullet(app):
 def game_onKeyPress(app, key):
     if not app.gameOver:
         #Jump
+        if not app.player1.defend:
         # Player1 Action
-        if key == 'w':
-            if app.player1.jump == False:
-                app.player1.jumpChr()
+            if key == 'w':
+                if app.player1.jump == False:
+                    app.player1.jumpChr()
+            #Shoot the bullet
+            if key == 'e' and app.player1.shuriCD == 0:
+                app.player1.shootChr()
+            if key == 'g' and app.player1.attackCD == 0:
+                app.player1.attackChr()
+                if (isHit(app.player1, app.player2) and app.player1.attack
+                    and not app.player2.defend):
+                    app.player2.health -= 1
         # Player2 Action
-        if key == 'up':
-            if app.player2.jump == False:
-                app.player2.jumpChr()
-        #Shoot the bullet
-        # Player1 Action
-        if key == 'h' and app.player1.shuriCD == 0:
-            app.player1.shootChr()
-        if key == 'g' and app.player1.attackCD == 0:
-            app.player1.attackChr()
-            if isHit(app.player1, app.player2) and app.player1.attack:
-                app.player2.health -= 1
-        # Player2 Action
-        if key == 'k' and app.player2.shuriCD == 0:
-            app.player2.shootChr()
-        if key == 'j' and app.player2.attackCD == 0:
-            app.player2.attackChr()
-            if isHit(app.player1, app.player2) and app.player2.attack:
-                app.player1.health -= 1
+        if not app.player2.defend:
+            if key == 'up':
+                if app.player2.jump == False:
+                    app.player2.jumpChr()
+            if key == 'enter' and app.player2.shuriCD == 0:
+                app.player2.shootChr()
+            if key == 'k' and app.player2.attackCD == 0:
+                app.player2.attackChr()
+                if (isHit(app.player1, app.player2) and app.player2.attack
+                    and not app.player1.defend):
+                    app.player1.health -= 1
     #Restart the game
     if app.gameOver == True:
         if key == 'r':
@@ -246,7 +284,9 @@ def game_onKeyHold(app, keys):
     if app.gameOver:
         return
     # Still Player1 Movement
-    if 'a' in keys:
+    if 'h' in keys:
+        app.player1.defend = True
+    elif 'a' in keys:
         app.player1.direction = 'left'
         app.player1.walk = True #Determine Motion
         if not hitBlockRight(app, app.player1):
@@ -256,15 +296,15 @@ def game_onKeyHold(app, keys):
         app.player1.walk = True
         if not hitBlockLeft(app, app.player1):
             app.player1.x += 5
-
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
     if app.player1.x + app.player1.sizeX > app.width: #Bounded Motion
         app.player1.x = app.width-app.player1.sizeX
     elif app.player1.x < app.player1.sizeX/2:
         app.player1.x = app.player1.sizeX/2
     # Player2 Movement:
-    if 'left' in keys:
+    if 'l' in keys:
+        app.player2.defend = True
+    elif 'left' in keys:
         app.player2.direction = 'left'
         app.player2.walk = True
         if not hitBlockRight(app, app.player2):
@@ -308,10 +348,14 @@ def game_onKeyRelease(app, key):
         app.player1.walk = False
     elif key == 'a':
         app.player1.walk = False
+    elif key == 'h':
+        app.player1.defend = False
     if key == 'left':
         app.player2.walk = False
     elif key == 'right':
         app.player2.walk = False
+    elif key == 'l':
+        app.player2.defend = False
 
 
 def game_onStep(app):
@@ -327,6 +371,7 @@ def game_onStep(app):
         attackCD(app)
         deterRise(app)
         playerLoc(app)
+        bulletHitBlock(app)
         app.counter += 1
 
 def playerLoc(app):
@@ -401,21 +446,12 @@ def spriteInd(app):
 
 
 #Gravity Simulation
-# Commented Parts are ideas from Qirui(Ridge) Da
 def gravSimul(app):
-    # Player 1 Sim
-    # Commented parts still from Qirui(Ridge) Da
-    # player1BeforeY = app.player1.y
-    # player1AfterY = player1BeforeY
-    # player1BeforeX = app.player1.x
-    # player1AfterX = player1BeforeX
+
     if app.player1.jump == True:
         app.player1.dy += 3
         app.player1.y += app.player1.dy
-        # afterMove
-        # player1AfterY = app.player1.y
-        # player1AfterX = app.player1.x
-    # print(app.player1.jump, app.player1.loc)
+
     
     for block in app.field.blocks:
         if onBlock(app.player1, block):
@@ -423,22 +459,15 @@ def gravSimul(app):
             app.player1.jump = False
             app.player1.dy = 0
             break
+        else:
+            app.player1.jump = True
 
-        # if collideBlock(block, player1BeforeX, player1BeforeY,
-        #                 player1AfterX, player1AfterY) == 'b2t':
-        #     app.player1.y = block.y + block.sizeY + app.player1.sizeY/2
-        #     app.player1.dy = 0
-        #     break
         if downBlock(app.player1, block):
             app.player1.y = block.y + block.sizeY + app.player1.sizeY/2
             app.player1.dy = 0
             break
 
-    if app.player1.loc == None:
-        app.player1.jump = True
     
-
-
     # Player 2 Sim
     if app.player2.jump == True:
         app.player2.dy += 3
@@ -450,13 +479,14 @@ def gravSimul(app):
             app.player2.jump = False
             app.player2.dy = 0
             break
+        else:
+            app.player2.jump = True
         if downBlock(app.player2, block):
             app.player2.y = block.y + block.sizeY + app.player2.sizeY/2
             app.player2.dy = 0
             break
 
-    if app.player2.loc == None:
-        app.player2.jump = True
+
 
 
 def onBlock(player, block):
@@ -471,24 +501,6 @@ def downBlock(player, block):
         if block.y+block.sizeY+player.dy <= player.y-player.sizeY/2 <= block.y+block.sizeY:
             return True
     return False
-
-# Collision Ideas from Qirui(Ridge) Da
-# def collideBlock(block: Game_Field.Block, 
-#                  beforeX: int, beforeY: int, afterX: int, afterY: int):
-    
-#     # "b2t"
-
-#     if beforeY > block.y + block.sizeY > afterY:
-#         interceptY = block.y + block.sizeY
-#         interceptX = ((interceptY - beforeY) / (afterY - beforeY) 
-#                       * (afterX - beforeX) + beforeX)
-#         if block.x < interceptX < block.x + block.sizeX:
-#             return "b2t"
- 
-#     # "t2b"
-#     # TODO: 
-#     # None
-#     return None
 
 #Bullet fly function
 def bulletFly(app):
@@ -508,22 +520,37 @@ def bulletHit(app):
         if (distance(app.projection[i].x, app.projection[i].y, 
                      app.player1.x, app.player1.y)
             < app.projection[i].sizeX/2 + app.player1.sizeX/2):
-            app.player1.health -= 1
-            if app.player1.health == 1:
-                app.projection[i].velocity = 0
-            else:
-                app.projection.pop(i)
+            if not app.player1.defend:
+                app.player1.health -= 1
+            app.projection.pop(i)
+
         elif (distance(app.projection[i].x, app.projection[i].y, 
                        app.player2.x, app.player2.y)
             < app.projection[i].sizeX/2 + app.player2.sizeX/2):
-            app.player2.health -= 1
-            if app.player2.health == 1:
-                app.projection[i].velocity = 0
-            else:
-                app.projection.pop(i)
+            if not app.player2.defend:
+                app.player2.health -= 1
+            app.projection.pop(i)
         i += 1
 
+#Bullet Disappear after hitting block
+def bulletHitBlock(app):
+    for block in app.field.blocks:
+        i = 0
+        while i < len(app.projection):
+            #Ideas from CS Academy 1.4.11
+            bottom1 = app.projection[i].y + app.projection[i].sizeY/2
+            right1 = app.projection[i].x + app.projection[i].sizeX/2
+            bottom2 = block.y + block.sizeY
+            right2 = block.x + block.sizeX
+            if (bottom1 >= block.y 
+                and bottom2 >= app.projection[i].y - app.projection[i].sizeY/2 
+                and right1 >= block.x
+                and right2 >= app.projection[i].x - app.projection[i].sizeX/2):
+                app.projection.pop(i)
+            i += 1
+                
 
+#Helper Function
 def distance(x1, y1, x2, y2):
     return ((x1-x2)**2+(y1-y2)**2)**0.5
 

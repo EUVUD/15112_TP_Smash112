@@ -29,6 +29,7 @@ class Char:
         self.attackComb = 1
         self.rise = False
         self.loc = None
+        self.defend = False
 
     def __repr__(self):
         return f'{self.name} with size {self.size} is at ({self.x},{self.y})'
@@ -64,6 +65,9 @@ class Donatello(Char):
         self.rWalkLoc = '../Graphics/Donatello_cropped/donatello_rWalk/'
         self.lStandLoc = '../Graphics/Donatello_cropped/donatello_lStand/'
         self.lWalkLoc = '../Graphics/Donatello_cropped/donatello_lWalk/'
+        self.headLoc = '../Graphics/Donatello_cropped/donatello_head/sprite-removebg-preview.png'
+        self.rDefLoc = '../Graphics/Donatello_cropped/donatello_rDefend/sprite-removebg-preview.png'
+        self.lDefLoc = '../Graphics/Donatello_cropped/donatello_lDefend/sprite-removebg-preview.png'
         self.rAttackSprite = [f'{self.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
         self.lAttackSprite = [f'{self.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
         self.rStandSprite = [f'{self.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
@@ -73,21 +77,25 @@ class Donatello(Char):
 
 
 class Leonardo(Char):
-    rAttackLoc = '../Graphics/Leonardo_cropped/leonardo_rAttack'
-    lAttackLoc = '../Graphics/Leonardo_cropped/leonardo_lAttack'
-    rStandLoc = '../Graphics/Leonardo_cropped/leonardo_rStand'
-    rWalkLoc = '../Graphics/Leonardo_cropped/leonardo_rWalk'
-    lStandLoc = '../Graphics/Leonardo_cropped/leonardo_lStand'
-    lWalkLoc = '../Graphics/Leonardo_cropped/leonardo_lWalk'
+    
 
     def __init__(self, x, y, direction, bulletList):
         super().__init__('Donatello', x, y, 37, 43, 'Blue', direction, bulletList)
-        self.rAttackSprite = [f'{Leonardo.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
-        self.lAttackSprite = [f'{Leonardo.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
-        self.rStandSprite = [f'{Leonardo.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
-        self.rWalkSprite = [f'{Leonardo.rWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
-        self.lStandSprite = [f'{Leonardo.lStandLoc}/{i}-removebg-preview.png' for i in range(12)]
-        self.lWalkSprite = [f'{Leonardo.lWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
+        self.rAttackLoc = '../Graphics/Leonardo_cropped/leonardo_rAttack'
+        self.lAttackLoc = '../Graphics/Leonardo_cropped/leonardo_lAttack'
+        self.rStandLoc = '../Graphics/Leonardo_cropped/leonardo_rStand'
+        self.rWalkLoc = '../Graphics/Leonardo_cropped/leonardo_rWalk'
+        self.lStandLoc = '../Graphics/Leonardo_cropped/leonardo_lStand'
+        self.lWalkLoc = '../Graphics/Leonardo_cropped/leonardo_lWalk'
+        self.headLoc = '../Graphics/Leonardo_cropped/leonardo_head/sprite-removebg-preview.png'
+        self.rDefLoc = '../Graphics/Leonardo_cropped/leonardo_rDefend/sprite-removebg-preview.png'
+        self.lDefLoc = '../Graphics/Leonardo_cropped/leonardo_lDefend/sprite-removebg-preview.png'
+        self.rAttackSprite = [f'{self.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
+        self.lAttackSprite = [f'{self.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
+        self.rStandSprite = [f'{self.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
+        self.rWalkSprite = [f'{self.rWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
+        self.lStandSprite = [f'{self.lStandLoc}/{i}-removebg-preview.png' for i in range(12)]
+        self.lWalkSprite = [f'{self.lWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
         
 
 
