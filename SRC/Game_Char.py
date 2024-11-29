@@ -27,6 +27,8 @@ class Char:
         self.bulletList = bulletList
         self.health = 5
         self.attackComb = 1
+        self.rise = False
+        self.loc = None
 
     def __repr__(self):
         return f'{self.name} with size {self.size} is at ({self.x},{self.y})'

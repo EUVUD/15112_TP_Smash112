@@ -4,11 +4,10 @@
 
 from cmu_graphics import *
 import Game_Char
-import Game_Steps
+import Game_Field
 import BT
 
 def onAppStart(app):
-    reStart(app)
     app.width = 600
     app.height = 600
     app.gameOver = False
@@ -16,12 +15,14 @@ def onAppStart(app):
     app.lShuriLoc = '../Graphics/Shuriken/lShuriken'
     app.rShuriSprite = [f'{app.rShuriLoc}/{i}-Photoroom.png' for i in range(3)]
     app.lShuriSprite = [f'{app.lShuriLoc}/{i}-Photoroom.png' for i in range(3)]
+    reStart(app)
     
 
 def reStart(app):
     app.aiMode = None
     app.counter = 0
-    app.ground = 450
+    fieldSetUp(app)
+    # Bullet
     app.projection = []
     #Player1 Basic Info and Sprite
     app.player1 = Game_Char.Donatello(app.width/4, app.height/4,'right', app.projection)
@@ -36,6 +37,19 @@ def reStart(app):
     #Bullet Fly
     app.bulletRightInd = 0
     app.bulletLeftInd = 0
+
+def fieldSetUp(app):
+    # Field
+    app.field = Game_Field.Field()
+    # Blocks
+    app.ground = Game_Field.Block('ground', 0, 450, app.width, app.height)
+    app.level1 = Game_Field.Block('level1', 400, 300, 30, 20)
+    app.level2 = Game_Field.Block('level2', 200, 300, 30, 20)
+    app.verticalBlock = Game_Field.Block('verticalBlock', 30, 420, 20, 30)
+    app.field.add(app.ground)
+    app.field.add(app.level1)
+    app.field.add(app.level2)
+    app.field.add(app.verticalBlock)
 
 # Start Screen
 
@@ -62,10 +76,17 @@ def start_onKeyPress(app, key):
 def game_redrawAll(app):
     # Draw Background
     drawImage('../Graphics/Background/10615.png', 0, 0, width = app.width, height = app.height)
+    drawField(app)
     drawInstruction(app)
     drawPlayer1(app)
     drawPlayer2(app)
     drawBullet(app)
+    
+
+def drawField(app):
+    for block in app.field.blocks:
+        drawRect(block.x, block.y, block.sizeX, block.sizeY, fill = 'black')
+
 
 def drawInstruction(app):
     drawLabel('Use w, a, s, d to move the Donatello', app.width/2, 20, size = 14)
@@ -74,7 +95,6 @@ def drawInstruction(app):
     drawLabel('Use k to shoot the bullet from Leonardo', app.width/2, 65, size = 14)
     drawLabel('Red Circles indicate how many lives left', app.width/2, 80, size = 14)
     drawLabel('If game over, press r to restart', app.width/2, 95, size = 14)
-    drawRect(0, app.ground, app.width, app.height, fill = 'black')
     # Gameover:
     if app.gameOver == True:
         if app.aiMode == True:
@@ -230,10 +250,12 @@ def game_onKeyHold(app, keys):
         app.player1.x -= 5
         app.player1.direction = 'left'
         app.player1.walk = True #Determine Motion
+            
     elif 'd' in keys:
         app.player1.x += 5
         app.player1.direction = 'right'
         app.player1.walk = True
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
     if app.player1.x + app.player1.sizeX > app.width: #Bounded Motion
         app.player1.x = app.width-app.player1.sizeX
     elif app.player1.x < 0:
@@ -252,6 +274,7 @@ def game_onKeyHold(app, keys):
     elif app.player2.x < 0:
         app.player2.x = 0
 
+
 def game_onKeyRelease(app, key):
     if app.gameOver:
         return 
@@ -269,16 +292,192 @@ def game_onStep(app):
     if not app.gameOver:
         if app.aiMode == True:
             BT.btAiPlayer(app).tick()
-        Game_Steps.deterGameOver(app)
-        Game_Steps.gravSimul(app)
-        Game_Steps.bulletFly(app)
-        Game_Steps.bulletHit(app)
-        Game_Steps.spriteInd(app)
-        Game_Steps.shuriKenCD(app)
-        Game_Steps.attackCD(app)
+        deterGameOver(app)
+        gravSimul(app)
+        bulletFly(app)
+        bulletHit(app)
+        spriteInd(app)
+        shuriKenCD(app)
+        attackCD(app)
+        deterRise(app)
+        playerLoc(app)
         app.counter += 1
 
+def playerLoc(app):
+    for block in app.field.blocks:
+        if onBlock(app.player1, block):
+            app.player1.loc = f'{block}'
+            break
+        else:
+            app.player1.loc = None
 
+def deterRise(app):
+    if app.player1.dy > 0:
+        app.player1.rise = False
+    else:
+        app.player1.rise = True
+    if app.player2.dy > 0:
+        app.player2.rise = False
+    else:
+        app.player2.rise = True
+
+
+def deterGameOver(app):
+    if app.player1.health == 0 or app.player2.health == 0:
+        app.gameOver = True
+
+
+def attackCD(app):
+    if app.player1.attackCD > 0:
+        app.player1.attackCD -= 1
+    if app.player2.attackCD > 0:
+        app.player2.attackCD -= 1
+        
+def shuriKenCD(app):
+    if app.player1.shuriCD > 0:
+        app.player1.shuriCD -= 1
+    if app.player2.shuriCD > 0:
+        app.player2.shuriCD -= 1
+            
+def spriteInd(app):
+    if app.counter % 2 == 0:
+            #Player1 Sprite
+            app.player1StandInd = (app.player1StandInd + 1) % len(app.player1.rStandSprite)
+            app.player1WalkInd = (app.player1WalkInd + 1) % len(app.player1.rWalkSprite)
+            if app.player1.attack:
+                if app.player1AttackInd == len(app.player1.rAttackSprite)-1:
+                    app.player1.attack = False
+                    app.player1.attackCD = 15
+                    app.player1.attackComb = 1
+                    app.player1AttackInd = 0
+                app.player1AttackInd += 1
+
+            #Player2 Sprite
+            app.player2StandInd = (app.player2StandInd + 1) % len(app.player2.rStandSprite)
+            app.player2WalkInd = (app.player2WalkInd + 1) % len(app.player2.rWalkSprite)
+            if app.player2.attack:
+                if app.player2AttackInd == len(app.player2.rAttackSprite)-1:
+                    app.player2.attack = False
+                    app.player2.attackCD = 15
+                    app.player2AttackInd = 0
+                app.player2AttackInd += 1
+
+            #Shuriken Sprite
+            app.bulletRightInd = (app.bulletRightInd + 1) % len(app.rShuriSprite)
+            app.bulletLeftInd = (app.bulletLeftInd + 1) % len(app.lShuriSprite)
+
+
+#Gravity Simulation
+
+def gravSimul(app):
+    # Player 1 Sim
+    # Commented parts still from Qirui(Ridge) Da
+    # player1BeforeY = app.player1.y
+    # player1AfterY = player1BeforeY
+    # player1BeforeX = app.player1.x
+    # player1AfterX = player1BeforeX
+    if app.player1.jump == True:
+        app.player1.dy += 3
+        app.player1.y += app.player1.dy
+        # afterMove
+        # player1AfterY = app.player1.y
+        # player1AfterX = app.player1.x
+    # print(app.player1.jump, app.player1.loc)
+    
+    for block in app.field.blocks:
+        if onBlock(app.player1, block):
+            app.player1.y = block.y - app.player1.sizeY/2
+            app.player1.jump = False
+            app.player1.dy = 0
+            break
+
+        # if collideBlock(block, player1BeforeX, player1BeforeY,
+        #                 player1AfterX, player1AfterY) == 'b2t':
+        #     app.player1.y = block.y + block.sizeY + app.player1.sizeY/2
+        #     app.player1.dy = 0
+        #     break
+        if downBlock(app.player1, block):
+            app.player1.y = block.y + block.sizeY + app.player1.sizeY/2
+            app.player1.dy = 0
+            break
+            
+
+    if app.player1.loc == None:
+        app.player1.jump = True
+
+
+    # Player 2 Sim
+    if app.player2.jump == True:
+        app.player2.dy += 3
+        app.player2.y += app.player2.dy
+    if app.player2.y >= app.ground.y - app.player2.sizeY/2:
+        app.player2.y = app.ground.y - app.player2.sizeY/2
+        app.player2.jump = False
+        app.player2.dy = 0
+
+def onBlock(player, block):
+    if block.x - player.sizeX/2 <= player.x <= block.x + block.sizeX + player.sizeX/2:
+        if (block.y + player.dy - player.sizeY/2 >= player.y 
+            >= block.y - player.sizeY/2): #The player.dy is used to correct error off by 2-3 pixels
+            return True
+    return False
+
+def downBlock(player, block):
+    if block.x - player.sizeX/2 <= player.x <= block.x + block.sizeX + player.sizeX/2:
+        if block.y+block.sizeY+player.dy <= player.y-player.sizeY/2 <= block.y+block.sizeY:
+            return True
+    return False
+
+# Collision Ideas from Qirui(Ridge) Da
+# def collideBlock(block: Game_Field.Block, 
+#                  beforeX: int, beforeY: int, afterX: int, afterY: int):
+    
+#     # "b2t"
+
+#     if beforeY > block.y + block.sizeY > afterY:
+#         interceptY = block.y + block.sizeY
+#         interceptX = ((interceptY - beforeY) / (afterY - beforeY) 
+#                       * (afterX - beforeX) + beforeX)
+#         if block.x < interceptX < block.x + block.sizeX:
+#             return "b2t"
+ 
+#     # "t2b"
+#     # TODO: 
+#     # None
+#     return None
+
+#Bullet fly function
+def bulletFly(app):
+    index = 0
+    while index < len(app.projection):
+        app.projection[index].x += app.projection[index].velocity
+        if app.projection[index].x - app.projection[index].sizeX < 0:
+            app.projection.pop(index)
+        elif app.projection[index].x + app.projection[index].sizeX > app.width:
+            app.projection.pop(index)
+        index += 1
+
+# Bullet hit function
+def bulletHit(app):
+    i = 0
+    while i < len(app.projection):
+        if (distance(app.projection[i].x, app.projection[i].y, 
+                     app.player1.x, app.player1.y)
+            < app.projection[i].sizeX/2 + app.player1.sizeX/2):
+            app.player1.health -= 1
+            if app.player1.health == 1:
+                app.projection[i].velocity = 0
+            else:
+                app.projection.pop(i)
+        elif (distance(app.projection[i].x, app.projection[i].y, 
+                       app.player2.x, app.player2.y)
+            < app.projection[i].sizeX/2 + app.player2.sizeX/2):
+            app.player2.health -= 1
+            if app.player2.health == 1:
+                app.projection[i].velocity = 0
+            else:
+                app.projection.pop(i)
+        i += 1
 
 
 def distance(x1, y1, x2, y2):
