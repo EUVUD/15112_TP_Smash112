@@ -256,6 +256,8 @@ def game_onKeyHold(app, keys):
         app.player1.walk = True
         if not hitBlockLeft(app, app.player1):
             app.player1.x += 5
+
+
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
     if app.player1.x + app.player1.sizeX > app.width: #Bounded Motion
         app.player1.x = app.width-app.player1.sizeX
@@ -283,6 +285,7 @@ def hitBlockRight(app, player):
             <= block.y+block.sizeY+player.sizeY/2):
             if (block.x + block.sizeX - 5 <= player.x - player.sizeX/2 
                 <= block.x + block.sizeX):
+                player.x = block.x + block.sizeX + player.sizeX/2
                 return True
     return False
 
@@ -292,8 +295,10 @@ def hitBlockLeft(app, player):
             <= block.y+block.sizeY+player.sizeY/2):
             if (block.x <= player.x + player.sizeX/2 
                 <= block.x + 5):
+                player.x = block.x - player.sizeX/2
                 return True
     return False
+
 
 
 def game_onKeyRelease(app, key):
@@ -455,7 +460,7 @@ def gravSimul(app):
 
 
 def onBlock(player, block):
-    if block.x - player.sizeX/2 <= player.x <= block.x + block.sizeX + player.sizeX/2:
+    if block.x - player.sizeX/2 < player.x < block.x + block.sizeX + player.sizeX/2:
         if (block.y + player.dy - player.sizeY/2 >= player.y 
             >= block.y - player.sizeY/2): #The player.dy is used to correct error off by 2-3 pixels
             return True
