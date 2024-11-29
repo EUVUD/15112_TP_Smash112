@@ -45,7 +45,7 @@ def fieldSetUp(app):
     app.ground = Game_Field.Block('ground', 0, 450, app.width, app.height)
     app.level1 = Game_Field.Block('level1', 400, 300, 30, 20)
     app.level2 = Game_Field.Block('level2', 200, 300, 30, 20)
-    app.verticalBlock = Game_Field.Block('verticalBlock', 30, 420, 20, 30)
+    app.verticalBlock = Game_Field.Block('verticalBlock', app.width/2, 300, 20, 150)
     app.field.add(app.ground)
     app.field.add(app.level1)
     app.field.add(app.level2)
@@ -247,32 +247,53 @@ def game_onKeyHold(app, keys):
         return
     # Still Player1 Movement
     if 'a' in keys:
-        app.player1.x -= 5
         app.player1.direction = 'left'
         app.player1.walk = True #Determine Motion
-            
+        if not hitBlockRight(app, app.player1):
+            app.player1.x -= 5
     elif 'd' in keys:
-        app.player1.x += 5
         app.player1.direction = 'right'
         app.player1.walk = True
+        if not hitBlockLeft(app, app.player1):
+            app.player1.x += 5
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
     if app.player1.x + app.player1.sizeX > app.width: #Bounded Motion
         app.player1.x = app.width-app.player1.sizeX
-    elif app.player1.x < 0:
-        app.player1.x = 0
+    elif app.player1.x < app.player1.sizeX/2:
+        app.player1.x = app.player1.sizeX/2
     # Player2 Movement:
     if 'left' in keys:
-        app.player2.x -= 5
         app.player2.direction = 'left'
         app.player2.walk = True
+        if not hitBlockRight(app, app.player2):
+            app.player2.x -= 5
     elif 'right' in keys:
-        app.player2.x += 5
         app.player2.direction = 'right'
         app.player2.walk = True
+        if not hitBlockLeft(app, app.player2):
+            app.player2.x += 5
     if app.player2.x + app.player2.sizeX > app.width: #Bounded Motion
         app.player2.x = app.width-app.player2.sizeX
     elif app.player2.x < 0:
         app.player2.x = 0
+
+def hitBlockRight(app, player):
+    for block in app.field.blocks:
+        if (block.y - player.sizeY/2 <= player.y 
+            <= block.y+block.sizeY+player.sizeY/2):
+            if (block.x + block.sizeX - 5 <= player.x - player.sizeX/2 
+                <= block.x + block.sizeX):
+                return True
+    return False
+
+def hitBlockLeft(app, player):
+    for block in app.field.blocks:
+        if (block.y - player.sizeY/2 <= player.y 
+            <= block.y+block.sizeY+player.sizeY/2):
+            if (block.x <= player.x + player.sizeX/2 
+                <= block.x + 5):
+                return True
+    return False
 
 
 def game_onKeyRelease(app, key):
@@ -310,6 +331,13 @@ def playerLoc(app):
             break
         else:
             app.player1.loc = None
+
+    for block in app.field.blocks:
+        if onBlock(app.player2, block):
+            app.player2.loc = f'{block}'
+            break
+        else:
+            app.player2.loc = None
 
 def deterRise(app):
     if app.player1.dy > 0:
@@ -368,7 +396,7 @@ def spriteInd(app):
 
 
 #Gravity Simulation
-
+# Commented Parts are ideas from Qirui(Ridge) Da
 def gravSimul(app):
     # Player 1 Sim
     # Commented parts still from Qirui(Ridge) Da
@@ -400,20 +428,31 @@ def gravSimul(app):
             app.player1.y = block.y + block.sizeY + app.player1.sizeY/2
             app.player1.dy = 0
             break
-            
 
     if app.player1.loc == None:
         app.player1.jump = True
+    
 
 
     # Player 2 Sim
     if app.player2.jump == True:
         app.player2.dy += 3
         app.player2.y += app.player2.dy
-    if app.player2.y >= app.ground.y - app.player2.sizeY/2:
-        app.player2.y = app.ground.y - app.player2.sizeY/2
-        app.player2.jump = False
-        app.player2.dy = 0
+    
+    for block in app.field.blocks:
+        if onBlock(app.player2, block):
+            app.player2.y = block.y - app.player2.sizeY/2
+            app.player2.jump = False
+            app.player2.dy = 0
+            break
+        if downBlock(app.player2, block):
+            app.player2.y = block.y + block.sizeY + app.player2.sizeY/2
+            app.player2.dy = 0
+            break
+
+    if app.player2.loc == None:
+        app.player2.jump = True
+
 
 def onBlock(player, block):
     if block.x - player.sizeX/2 <= player.x <= block.x + block.sizeX + player.sizeX/2:
