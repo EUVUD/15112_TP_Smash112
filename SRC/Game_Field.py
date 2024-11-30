@@ -1,5 +1,6 @@
 class Field:
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.blocks = []
 
     def __repr__(self):

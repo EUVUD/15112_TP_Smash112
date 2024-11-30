@@ -22,6 +22,7 @@ class Char:
         self.attackCD = 0
         self.shuriCD = 0
         self.color = color
+        self.dx = 0
         self.dy = 0
         self.direction = direction
         self.bulletList = bulletList
@@ -80,7 +81,7 @@ class Leonardo(Char):
     
 
     def __init__(self, x, y, direction, bulletList):
-        super().__init__('Donatello', x, y, 37, 43, 'Blue', direction, bulletList)
+        super().__init__('Leonardo', x, y, 37, 43, 'Blue', direction, bulletList)
         self.rAttackLoc = '../Graphics/Leonardo_cropped/leonardo_rAttack'
         self.lAttackLoc = '../Graphics/Leonardo_cropped/leonardo_lAttack'
         self.rStandLoc = '../Graphics/Leonardo_cropped/leonardo_rStand'

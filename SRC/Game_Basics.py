@@ -40,15 +40,17 @@ def reStart(app):
 
 def fieldSetUp(app):
     # Field
-    app.field = Game_Field.Field()
+    app.field = Game_Field.Field('default')
     # Blocks
     app.ground = Game_Field.Block('ground', 0, 450, app.width, app.height)
-    app.level1 = Game_Field.Block('level1', 400, 300, 30, 20)
-    app.level2 = Game_Field.Block('level2', 200, 300, 30, 20)
-    app.verticalBlock = Game_Field.Block('verticalBlock', app.width/2, 300, 20, 150)
+    app.level1 = Game_Field.Block('level1', 400, 300, 100, 20)
+    app.level2 = Game_Field.Block('level2', 100, 300, 100, 20)
+    app.level3 = Game_Field.Block('level3', 200, 150, 200, 20)
+    app.verticalBlock = Game_Field.Block('verticalBlock', (app.width-10)/2, 300, 20, 150)
     app.field.add(app.ground)
     app.field.add(app.level1)
     app.field.add(app.level2)
+    app.field.add(app.level3)
     app.field.add(app.verticalBlock)
 
 # Start Screen
@@ -289,13 +291,13 @@ def game_onKeyHold(app, keys):
     elif 'a' in keys:
         app.player1.direction = 'left'
         app.player1.walk = True #Determine Motion
-        if not hitBlockRight(app, app.player1):
-            app.player1.x -= 5
+        if not hitBlockRight(app, app.player1) and app.player1.walk:
+            app.player1.dx = -5
     elif 'd' in keys:
         app.player1.direction = 'right'
         app.player1.walk = True
-        if not hitBlockLeft(app, app.player1):
-            app.player1.x += 5
+        if not hitBlockLeft(app, app.player1) and app.player1.walk:
+            app.player1.dx = 5
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
     if app.player1.x + app.player1.sizeX > app.width: #Bounded Motion
         app.player1.x = app.width-app.player1.sizeX
@@ -307,13 +309,13 @@ def game_onKeyHold(app, keys):
     elif 'left' in keys:
         app.player2.direction = 'left'
         app.player2.walk = True
-        if not hitBlockRight(app, app.player2):
-            app.player2.x -= 5
+        if not hitBlockRight(app, app.player2) and app.player2.walk:
+            app.player2.dx = -5
     elif 'right' in keys:
         app.player2.direction = 'right'
         app.player2.walk = True
-        if not hitBlockLeft(app, app.player2):
-            app.player2.x += 5
+        if not hitBlockLeft(app, app.player2) and app.player2.walk:
+            app.player2.dx = 5
     if app.player2.x + app.player2.sizeX > app.width: #Bounded Motion
         app.player2.x = app.width-app.player2.sizeX
     elif app.player2.x < 0:
@@ -344,16 +346,14 @@ def hitBlockLeft(app, player):
 def game_onKeyRelease(app, key):
     if app.gameOver:
         return 
-    if key == 'd':
+    if key == 'd' or key == 'a':
         app.player1.walk = False
-    elif key == 'a':
-        app.player1.walk = False
+        app.player1.dx = 0
     elif key == 'h':
         app.player1.defend = False
-    if key == 'left':
+    if key == 'left' or key == 'right':
         app.player2.walk = False
-    elif key == 'right':
-        app.player2.walk = False
+        app.player2.dx = 0
     elif key == 'l':
         app.player2.defend = False
 
@@ -372,6 +372,7 @@ def game_onStep(app):
         deterRise(app)
         playerLoc(app)
         bulletHitBlock(app)
+        walkSimul(app)
         app.counter += 1
 
 def playerLoc(app):
@@ -486,7 +487,10 @@ def gravSimul(app):
             app.player2.dy = 0
             break
 
-
+def walkSimul(app):
+    app.player1.x += app.player1.dx
+    app.player2.x += app.player2.dx
+    
 
 
 def onBlock(player, block):
