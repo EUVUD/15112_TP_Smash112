@@ -103,8 +103,6 @@ def btAiPlayer(app):
         else:
             app.player2.direction = 'left'
         app.player2.attackChr()
-        if isHit(app.player1, app.player2) and app.player2.attack:
-                app.player1.health -= 1
         return 'Success'
 
     def attackRange(app):
@@ -118,11 +116,11 @@ def btAiPlayer(app):
             return 'Success'
         else:
             if app.player1.x < app.player2.x:
-                app.player2.x -= 5
+                app.player2.dx = -5
                 app.player2.walk = True
                 app.player2.direction = 'left'
             elif app.player1.x > app.player2.x:
-                app.player2.x += 5
+                app.player2.dx = 5
                 app.player2.walk = True
                 app.player2.direction = 'right'
             return 'Running'

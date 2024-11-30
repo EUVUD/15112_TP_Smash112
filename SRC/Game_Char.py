@@ -19,6 +19,7 @@ class Char:
         self.jump = True
         self.walk = False
         self.attack = False
+        self.attackAni = False
         self.attackCD = 0
         self.shuriCD = 0
         self.color = color
@@ -50,6 +51,7 @@ class Char:
 
     def attackChr(self):
         self.attack = True
+        self.attackAni = True
         self.attackCD = 15
 
     def jumpChr(self):
