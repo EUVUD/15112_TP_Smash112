@@ -29,11 +29,13 @@ def reStart(app):
     app.player1StandInd = 0
     app.player1WalkInd = 0
     app.player1AttackInd = 0
+    app.player1AntiDefInd = 0
     #Player2 Basic Info and Sprite
     app.player2 = Game_Char.Leonardo(3 * app.width/4, app.height/4,'left', app.projection)
     app.player2StandInd = 0
     app.player2WalkInd = 0
     app.player2AttackInd = 0
+    app.player2AntiDefInd = 0
     #Bullet Fly
     app.bulletRightInd = 0
     app.bulletLeftInd = 0
@@ -124,7 +126,15 @@ def drawPlayer1(app):
               width = headDim[0]*1.5, height = headDim[1]*1.5)
     # draw Player1 with Sprite
     if app.player1.direction == 'left': #Direction Left
-        if app.player1.defend == True:
+        if app.player1.antiDefendAni:
+            imageDimension = getImageSize(app.player1.antiLDefSprite[app.player1AntiDefInd])
+            imageWidth = imageDimension[0]
+            imageHeight = imageDimension[1]
+            drawImage(app.player1.antiLDefSprite[app.player1AntiDefInd],
+                      app.player1.x, app.player1.y-imageHeight/4,
+                      width = imageWidth, height = imageHeight,
+                      align = 'center')
+        elif app.player1.defend:
             drawCircle(app.player1.x, app.player1.y, 30, fill = 'red', opacity = 20, border = 'silver')
             drawImage(app.player1.lDefLoc, app.player1.x, app.player1.y, align = 'center')
         elif app.player1.attackAni:
@@ -143,7 +153,15 @@ def drawPlayer1(app):
                     width = app.player1.sizeX, height = app.player1.sizeY,
                     align = 'center')
     else: # Direction Right or Initial
-        if app.player1.defend == True:
+        if app.player1.antiDefendAni:
+            imageDimension = getImageSize(app.player1.antiRDefSprite[app.player1AntiDefInd])
+            imageWidth = imageDimension[0]
+            imageHeight = imageDimension[1]
+            drawImage(app.player1.antiRDefSprite[app.player1AntiDefInd],
+                      app.player1.x, app.player1.y-imageHeight/4,
+                      width = imageWidth, height = imageHeight,
+                      align = 'center')
+        elif app.player1.defend:
             drawCircle(app.player1.x, app.player1.y, 30, fill = 'red', opacity = 20, border = 'silver')
             drawImage(app.player1.rDefLoc, app.player1.x, app.player1.y, align = 'center')
         elif app.player1.attackAni:
@@ -185,11 +203,18 @@ def drawPlayer2(app):
 
     # draw Player2 with Sprite
     if app.player2.direction == 'right':
-        if app.player2.defend == True:
+        if app.player2.antiDefendAni:
+            imageDimension = getImageSize(app.player2.antiRDefSprite[app.player2AntiDefInd])
+            imageWidth = imageDimension[0]
+            imageHeight = imageDimension[1]
+            drawImage(app.player2.antiRDefSprite[app.player2AntiDefInd],
+                      app.player2.x, app.player2.y-imageHeight/4,
+                      width = imageWidth, height = imageHeight,
+                      align = 'center')
+        elif app.player2.defend:
             drawCircle(app.player2.x, app.player2.y, 30, fill = 'red', opacity = 20, border = 'silver')
             drawImage(app.player2.rDefLoc, app.player2.x, app.player2.y, align = 'center')
         elif app.player2.attackAni:
-            app.player2.attackAni = True
             imageDimension = getImageSize(app.player2.rAttackSprite[app.player2AttackInd])
             imageWidth = imageDimension[0]
             drawImage(app.player2.rAttackSprite[app.player2AttackInd],
@@ -205,11 +230,18 @@ def drawPlayer2(app):
                     width = app.player2.sizeX, height = app.player2.sizeY,
                     align = 'center')
     else:
-        if app.player2.defend == True:
+        if app.player2.antiDefendAni:
+            imageDimension = getImageSize(app.player2.antiLDefSprite[app.player2AntiDefInd])
+            imageWidth = imageDimension[0]
+            imageHeight = imageDimension[1]
+            drawImage(app.player2.antiLDefSprite[app.player2AntiDefInd],
+                    app.player2.x, app.player2.y-imageHeight/4,
+                    width = imageWidth, height = imageHeight,
+                    align = 'center')
+        elif app.player2.defend:
             drawCircle(app.player2.x, app.player2.y, 30, fill = 'red', opacity = 20, border = 'silver')
             drawImage(app.player2.lDefLoc, app.player2.x, app.player2.y, align = 'center')
         elif app.player2.attackAni:
-            app.player2.attackAni = True
             imageDimension = getImageSize(app.player2.lAttackSprite[app.player2AttackInd])
             imageWidth = imageDimension[0]
             drawImage(app.player2.lAttackSprite[app.player2AttackInd],
@@ -248,8 +280,10 @@ def game_onKeyPress(app, key):
             #Shoot the bullet
             if key == 'e' and app.player1.shuriCD == 0:
                 app.player1.shootChr()
-            if key == 'g' and app.player1.attackCD == 0:
+            elif key == 'g' and app.player1.attackCD == 0:
                 app.player1.attackChr()
+            elif key == 'f' and app.player1.antiDefCD == 0:
+                app.player1.antiDefendChr()
                 
         # Player2 Action
         if not app.player2.defend:
@@ -258,8 +292,10 @@ def game_onKeyPress(app, key):
                     app.player2.jumpChr()
             if key == 'enter' and app.player2.shuriCD == 0:
                 app.player2.shootChr()
-            if key == 'k' and app.player2.attackCD == 0:
+            elif key == 'k' and app.player2.attackCD == 0:
                 app.player2.attackChr()
+            elif key == ';' and app.player2.antiDefCD == 0:
+                app.player2.antiDefendChr()
                 
     #Restart the game
     if app.gameOver == True:
@@ -268,14 +304,14 @@ def game_onKeyPress(app, key):
             reStart(app)
             app.gameOver = False
 
+# Determine whether is in the normal attack range
 def isHit(player1, player2):
     if (distance(player1.x+player1.sizeX/2, player1.y+player1.sizeY/2,
                 player2.x+player2.sizeX/2, player2.y+player2.sizeY/2)
                 < 50):
         return True
     else:
-        return False
-    
+        return False    
 
 def game_onKeyHold(app, keys):
     if app.gameOver:
@@ -330,23 +366,24 @@ def game_onStep(app):
         bulletFly(app)
         bulletHit(app)
         spriteInd(app)
-        shuriKenCD(app)
         attackCD(app)
         deterRise(app)
         playerLoc(app)
         bulletHitBlock(app)
-        walkSimul(app)
+        walkMot(app)
         boundedMotion(app)
         deterAtt(app)
         bloodFixed(app)
         app.counter += 1
 
+# Prevent bugs where health bar can go non-positive
 def bloodFixed(app):
     if app.player1.health <= 0:
         app.player1.health = 0.1
     elif app.player2.health <= 0:
         app.player2.health = 0.1
 
+# Determine whether attack deal damage
 def deterAtt(app):
     if (isHit(app.player1, app.player2) and app.player2.attack
                     and not app.player1.defend):
@@ -356,7 +393,19 @@ def deterAtt(app):
                     and not app.player2.defend):
                     app.player2.health -= 1
                     app.player1.attack = False
+    if (isHit(app.player1, app.player2) and app.player2.antiDefend
+                    and app.player1.defend):
+                    app.player1.health -= 1
+                    app.player1.defend = False
+                    app.player2.antiDefend = False
+    if (isHit(app.player1, app.player2) and app.player1.antiDefend
+                    and app.player2.defend):
+                    app.player2.health -= 1
+                    app.player2.defend = False
+                    app.player1.antiDefend = False
 
+    
+#Record down which block player is on
 def playerLoc(app):
     for block in app.field.blocks:
         if onBlock(app.player1, block):
@@ -371,6 +420,7 @@ def playerLoc(app):
             break
         else:
             app.player2.loc = None
+
 
 def deterRise(app):
     if app.player1.dy > 0:
@@ -387,47 +437,73 @@ def deterGameOver(app):
     if app.player1.health == 0.1 or app.player2.health == 0.1:
         app.gameOver = True
 
-
+# Count all the abilities' CD
 def attackCD(app):
+    #Normal Attack
     if app.player1.attackCD > 0:
         app.player1.attackCD -= 1
     if app.player2.attackCD > 0:
         app.player2.attackCD -= 1
-        
-def shuriKenCD(app):
+    #Bullet
     if app.player1.shuriCD > 0:
         app.player1.shuriCD -= 1
     if app.player2.shuriCD > 0:
         app.player2.shuriCD -= 1
-            
+    #AntiDefend
+    if app.player1.antiDefCD > 0:
+        app.player1.antiDefCD -= 1
+    if app.player2.antiDefCD > 0:
+        app.player2.antiDefCD -= 1
+    
+
+# Increment the sprite image index
 def spriteInd(app):
     if app.counter % 2 == 0:
-            #Player1 Sprite
-            app.player1StandInd = (app.player1StandInd + 1) % len(app.player1.rStandSprite)
-            app.player1WalkInd = (app.player1WalkInd + 1) % len(app.player1.rWalkSprite)
-            if app.player1.attackAni:
-                if app.player1AttackInd == len(app.player1.rAttackSprite)-1:
-                    app.player1.attack = False
-                    app.player1.attackAni = False
-                    app.player1.attackCD = 15
-                    app.player1.attackComb = 1
-                    app.player1AttackInd = 0
-                app.player1AttackInd += 1
+        #Player1 Sprite
+        app.player1StandInd = (app.player1StandInd + 1) % len(app.player1.rStandSprite)
+        app.player1WalkInd = (app.player1WalkInd + 1) % len(app.player1.rWalkSprite)
+        if app.player1.attackAni:
+            if app.player1AttackInd == len(app.player1.rAttackSprite)-1:
+                app.player1.attack = False
+                app.player1.attackAni = False
+                app.player1.attackCD = 15
+                app.player1.attackComb = 1
+                app.player1AttackInd = 0
+            app.player1AttackInd += 1
 
-            #Player2 Sprite
-            app.player2StandInd = (app.player2StandInd + 1) % len(app.player2.rStandSprite)
-            app.player2WalkInd = (app.player2WalkInd + 1) % len(app.player2.rWalkSprite)
-            if app.player2.attackAni:
-                if app.player2AttackInd == len(app.player2.rAttackSprite)-1:
-                    app.player2.attack = False
-                    app.player2.attackAni = False
-                    app.player2.attackCD = 15
-                    app.player2AttackInd = 0
-                app.player2AttackInd += 1
+        #Player2 Sprite
+        app.player2StandInd = (app.player2StandInd + 1) % len(app.player2.rStandSprite)
+        app.player2WalkInd = (app.player2WalkInd + 1) % len(app.player2.rWalkSprite)
+        if app.player2.attackAni:
+            if app.player2AttackInd == len(app.player2.rAttackSprite)-1:
+                app.player2.attack = False
+                app.player2.attackAni = False
+                app.player2.attackCD = 15
+                app.player2AttackInd = 0
+            app.player2AttackInd += 1
 
-            #Shuriken Sprite
-            app.bulletRightInd = (app.bulletRightInd + 1) % len(app.rShuriSprite)
-            app.bulletLeftInd = (app.bulletLeftInd + 1) % len(app.lShuriSprite)
+        #Shuriken Sprite
+        app.bulletRightInd = (app.bulletRightInd + 1) % len(app.rShuriSprite)
+        app.bulletLeftInd = (app.bulletLeftInd + 1) % len(app.lShuriSprite)
+
+    if app.counter % 4 == 0:
+        if app.player1.antiDefendAni:
+            if app.player1AntiDefInd == len(app.player1.antiRDefSprite)-1:
+                app.player1.antiDefend = False
+                app.player1.antiDefendAni = False
+                app.player1.antiDefCD = 30
+                app.player1AntiDefInd = 0
+            app.player1AntiDefInd += 1
+
+        if app.player2.antiDefendAni:
+            if app.player2AntiDefInd == len(app.player2.antiRDefSprite)-1:
+                app.player2.antiDefend = False
+                app.player2.antiDefendAni = False
+                app.player2.antiDefCD = 30
+                app.player2AntiDefInd = 0
+            app.player2AntiDefInd += 1
+
+            
 
 
 def boundedMotion(app):
@@ -437,6 +513,7 @@ def boundedMotion(app):
     hitBlockRight(app, app.player2)
     hitFrame(app)
 
+# Determine if the character hit the left or right most side
 def hitFrame(app):
     if app.player1.x + app.player1.sizeX > app.width: #Bounded Motion
         app.player1.x = app.width-app.player1.sizeX
@@ -447,7 +524,7 @@ def hitFrame(app):
     elif app.player2.x < 0:
         app.player2.x = 0
     
-
+# Determine if the character hit the block on left or right side
 def hitBlockRight(app, player):
     for block in app.field.blocks:
         if (block.y - player.sizeY/2 <= player.y 
@@ -508,7 +585,8 @@ def gravSimul(app):
             app.player2.dy = 0
             break
 
-def walkSimul(app):
+# Perform Walk Motion
+def walkMot(app):
     if not app.player1.defend:
         app.player1.x += app.player1.dx
     if not app.player2.defend:
