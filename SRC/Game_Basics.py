@@ -122,10 +122,10 @@ def drawLargView(app):
 #Code below are from CS Academy##############
 
 def fieldSelection_onKeyPress(app, key):
-    if key == 'left':    moveSelection(app, 0, -1)
-    elif key == 'right': moveSelection(app, 0, +1)
-    elif key == 'up':    moveSelection(app ,-1, 0)
-    elif key == 'down':  moveSelection(app, +1, 0)
+    if key == 'left' or key == 'a':    moveSelection(app, 0, -1)
+    elif key == 'right' or key == 'd': moveSelection(app, 0, +1)
+    elif key == 'up' or key == 'w':    moveSelection(app ,-1, 0)
+    elif key == 'down' or key == 's':  moveSelection(app, +1, 0)
     if key == 'enter':
         currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
         app.selectedField = app.fields[currRow][currRow]
