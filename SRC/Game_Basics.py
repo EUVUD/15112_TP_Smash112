@@ -199,10 +199,10 @@ def drawField(app):
 
 def drawInstruction(app):
     drawLabel('Use w, a, s, d to move the Donatello', app.width/2, 20, size = 14)
-    drawLabel('Use g to shoot the bullet from Donatello', app.width/2, 35, size = 14)
+    drawLabel('Use e to shoot, g to attack, h to defend and f to antidefend', app.width/2, 35, size = 14)
     drawLabel('Use up, left, down, right to move Leonardo', app.width/2, 50, size = 14)
-    drawLabel('Use k to shoot the bullet from Leonardo', app.width/2, 65, size = 14)
-    drawLabel('Red Circles indicate how many lives left', app.width/2, 80, size = 14)
+    drawLabel('Use enter to shoot, l to attack, : to defend and k to antidefend', app.width/2, 65, size = 14)
+    drawLabel('Health Bar indicate how many lives left', app.width/2, 80, size = 14)
     drawLabel('If game over, press r to restart', app.width/2, 95, size = 14)
     # Gameover:
     if app.gameOver == True:
