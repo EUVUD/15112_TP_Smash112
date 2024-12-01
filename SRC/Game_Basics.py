@@ -8,7 +8,7 @@ import Game_Field
 import BT
 
 def onAppStart(app):
-    app.width = 600
+    app.width = 800
     app.height = 600
     app.gameOver = False
     app.rShuriLoc = '../Graphics/Shuriken/rShuriken'
@@ -19,9 +19,15 @@ def onAppStart(app):
     
 
 def reStart(app):
+    #AiSelection Page
     app.aiMode = None
+    app.selectCounter = 0
     app.counter = 0
-    fieldSetUp(app)
+    #FieldSelection Page
+    Game_Field.fieldSetUp(app)
+    Game_Field.fieldList(app)
+    app.fieldSelection = (0, 0)
+    app.selectedField = None
     # Bullet
     app.projection = []
     #Player1 Basic Info and Sprite
@@ -40,46 +46,145 @@ def reStart(app):
     app.bulletRightInd = 0
     app.bulletLeftInd = 0
 
-def fieldSetUp(app):
-    # Field
-    app.field = Game_Field.Field('default')
-    # Blocks
-    app.ground = Game_Field.Block('ground', 0, 450, app.width, app.height)
-    app.level1 = Game_Field.Block('level1', 400, 300, 100, 20)
-    app.level2 = Game_Field.Block('level2', 100, 300, 100, 20)
-    app.level3 = Game_Field.Block('level3', 200, 150, 200, 20)
-    app.verticalBlock = Game_Field.Block('verticalBlock', (app.width-10)/2, 300, 20, 150)
-    app.field.add(app.ground)
-    app.field.add(app.level1)
-    app.field.add(app.level2)
-    app.field.add(app.level3)
-    app.field.add(app.verticalBlock)
+
 
 # Start Screen
 
 def start_redrawAll(app):
     drawImage('../Graphics/Background/beginBg.webp',
               0, 0, width = app.width, height = app.height)
-    drawLabel('Welcome to Smash-112', app.width/2, app.height/5, size=40, 
+    drawLabel('Welcome to Smash-112', app.width/2, app.height/15*6, size=46, 
               bold=True, fill = 'lightgreen')
-    drawLabel('Press a to enter AI player mode', app.width/2, app.height/5*2, 
-              size=24, fill = 'lightgreen')
-    drawLabel('Press m to enter Multi-player mode', app.width/2, app.height/5*3, 
+    drawRect(0, app.height/3*2-12, app.width, 26, fill = 'black')
+    drawLabel('Press any button to begin', app.width/2, app.height/3*2, 
               size=24, fill = 'lightgreen')
 
 def start_onKeyPress(app, key):
-    if key == 'a' or key == 'm':
-        if key == 'a':
+    setActiveScreen('AiSelection')
+
+#AI Selection Page
+def AiSelection_redrawAll(app):
+    drawImage('../Graphics/Background/ai_selection.webp',
+              0, 0, width = app.width, height = app.height)
+    if app.selectCounter % 2 == 0:
+        drawRect(app.width/4, app.height/2, app.width/3, app.height/4, 
+                 align = 'center', border = 'red', borderWidth = 2)
+        drawRect(app.width/4*3, app.height/2, app.width/3, app.height/4, align = 'center')
+    else:
+        drawRect(app.width/4, app.height/2, app.width/3, app.height/4, 
+                 align = 'center')
+        drawRect(app.width/4*3, app.height/2, app.width/3, app.height/4, 
+                 align = 'center', border = 'red', borderWidth = 2)
+    drawLabel('Multi-player', app.width/4, app.height/2, fill = 'blue', size=36)
+    drawLabel('AI Mode', app.width/4*3, app.height/2, fill = 'red', size=36)
+
+def AiSelection_onKeyPress(app, key):
+    if key == 'right' or key == 'd':
+        app.selectCounter += 1
+    if key == 'left' or key == 'a':
+        app.selectCounter -= 1
+    if key == 'enter':
+        if app.selectCounter % 2 == 1:
             app.aiMode = True
-        elif key == 'm':
-            app.aiMode = False
+        setActiveScreen('fieldSelection')
+
+# Field Selection Page
+def fieldSelection_redrawAll(app):
+    drawImage('../Graphics/Background/fieldSelection.webp',
+              0, 0, width = app.width, height = app.height)
+    drawRect(app.width/4, app.height/2, app.width/3, app.height/3, align = 'center',
+             fill = None, border = 'black')
+    drawRect(app.width/4, app.height/2 + app.height/5, app.width/3, 40,
+             fill = 'purple', border = 'grey', align = 'center')
+    currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
+    name = app.fields[currRow][currCol].name
+    drawLabel(f'{name}', app.width/4, app.height/2 + app.height/5, size = 22)
+    drawLargView(app)
+    drawRect(app.width/15*7, app.height/4 - 40, 150, 40, fill = 'purple')
+    drawLabel('Field Selection', app.width/15*7 + 75, app.height/4 - 20, size = 22)
+    drawBoard(app)
+    drawBoardBorder(app)
+
+def drawLargView(app):
+    currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
+    relativeX = app.width/4 - app.width/6
+    relativeY = app.height/2 - app.height/6
+    if app.fields[currRow][currCol] != None:
+        drawImage(app.fields[currRow][currCol].image, relativeX, relativeY, 
+                width = app.width/3, height = app.height/3)
+        for block in app.fields[currRow][currCol].blocks:
+            minX = block.x/3
+            minY = block.y/3
+            minSizeX = block.sizeX/3
+            minSizeY = block.sizeY/3
+            drawRect(relativeX + minX, relativeY + minY, minSizeX, minSizeY)
+
+#Code below are from CS Academy##############
+
+def fieldSelection_onKeyPress(app, key):
+    if key == 'left':    moveSelection(app, 0, -1)
+    elif key == 'right': moveSelection(app, 0, +1)
+    elif key == 'up':    moveSelection(app ,-1, 0)
+    elif key == 'down':  moveSelection(app, +1, 0)
+    if key == 'enter':
+        currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
+        app.selectedField = app.fields[currRow][currRow]
         setActiveScreen('game')
+
+def moveSelection(app, drow, dcol):
+    if app.fieldSelection != None:
+        selectedRow, selectedCol = app.fieldSelection
+        newSelectedRow = (selectedRow + drow) % 2
+        newSelectedCol = (selectedCol + dcol) % 2
+        app.fieldSelection = (newSelectedRow, newSelectedCol)
+
+def drawBoard(app):
+    for row in range(2):
+        for col in range(2):
+            drawCell(app, row, col)
+
+def drawCell(app, row, col):
+    cellLeft, cellTop = getCellLeftTop(app, row, col)
+    cellWidth, cellHeight = getCellSize(app)
+    color = 'red' if (row, col) == app.fieldSelection else 'black'
+    borderWidth = 3 if (row, col) == app.fieldSelection else 1
+    if app.fields[row][col] != None:
+        drawImage(app.fields[row][col].image, cellLeft, cellTop, 
+                width = app.width/4, height = app.height/4)
+        for block in app.fields[row][col].blocks:
+            minX = block.x/4
+            minY = block.y/4
+            minSizeX = block.sizeX/4
+            minSizeY = block.sizeY/4
+            drawRect(cellLeft + minX, cellTop + minY, minSizeX, minSizeY)
+    drawRect(cellLeft, cellTop, cellWidth, cellHeight,
+             fill=None, border= color,
+             borderWidth=borderWidth)
+    
+def getCellLeftTop(app, row, col):
+    cellWidth, cellHeight = getCellSize(app)
+    cellLeft = app.width/15*7 + col * cellWidth
+    cellTop = app.height/4 + row * cellHeight
+    return (cellLeft, cellTop)
+
+def getCellSize(app):
+    cellWidth = app.width/2 / 2
+    cellHeight = app.height/2 / 2
+    return (cellWidth, cellHeight)
+
+def drawBoardBorder(app):
+  # draw the board outline (with double-thickness):
+  drawRect(app.width/15*7, app.height/4, app.width/2, app.height/2,
+           fill=None, border='black',
+           borderWidth=2*1)
+
+#Code above are from CS Academy##############
 
 # Game Screen
 
 def game_redrawAll(app):
     # Draw Background
-    drawImage('../Graphics/Background/10615.png', 0, 0, width = app.width, height = app.height)
+    drawImage(app.selectedField.image, 0, 0, width = app.width, height = app.height)
     drawField(app)
     drawInstruction(app)
     drawPlayer1(app)
@@ -88,7 +193,7 @@ def game_redrawAll(app):
     
 
 def drawField(app):
-    for block in app.field.blocks:
+    for block in app.selectedField.blocks:
         drawRect(block.x, block.y, block.sizeX, block.sizeY, fill = 'black')
 
 
@@ -407,14 +512,14 @@ def deterAtt(app):
     
 #Record down which block player is on
 def playerLoc(app):
-    for block in app.field.blocks:
+    for block in app.selectedField.blocks:
         if onBlock(app.player1, block):
             app.player1.loc = f'{block}'
             break
         else:
             app.player1.loc = None
 
-    for block in app.field.blocks:
+    for block in app.selectedField.blocks:
         if onBlock(app.player2, block):
             app.player2.loc = f'{block}'
             break
@@ -466,7 +571,6 @@ def spriteInd(app):
             if app.player1AttackInd == len(app.player1.rAttackSprite)-1:
                 app.player1.attack = False
                 app.player1.attackAni = False
-                app.player1.attackCD = 15
                 app.player1.attackComb = 1
                 app.player1AttackInd = 0
             app.player1AttackInd += 1
@@ -478,7 +582,6 @@ def spriteInd(app):
             if app.player2AttackInd == len(app.player2.rAttackSprite)-1:
                 app.player2.attack = False
                 app.player2.attackAni = False
-                app.player2.attackCD = 15
                 app.player2AttackInd = 0
             app.player2AttackInd += 1
 
@@ -504,8 +607,6 @@ def spriteInd(app):
             app.player2AntiDefInd += 1
 
             
-
-
 def boundedMotion(app):
     hitBlockLeft(app, app.player1)
     hitBlockLeft(app, app.player2)
@@ -526,7 +627,7 @@ def hitFrame(app):
     
 # Determine if the character hit the block on left or right side
 def hitBlockRight(app, player):
-    for block in app.field.blocks:
+    for block in app.selectedField.blocks:
         if (block.y - player.sizeY/2 <= player.y 
             <= block.y+block.sizeY+player.sizeY/2):
             if (block.x + block.sizeX - 5 <= player.x - player.sizeX/2 
@@ -535,7 +636,7 @@ def hitBlockRight(app, player):
 
 
 def hitBlockLeft(app, player):
-    for block in app.field.blocks:
+    for block in app.selectedField.blocks:
         if (block.y - player.sizeY/2 <= player.y 
             <= block.y+block.sizeY+player.sizeY/2):
             if (block.x <= player.x + player.sizeX/2 
@@ -552,7 +653,7 @@ def gravSimul(app):
         app.player1.y += app.player1.dy
 
     
-    for block in app.field.blocks:
+    for block in app.selectedField.blocks:
         if onBlock(app.player1, block):
             app.player1.y = block.y - app.player1.sizeY/2
             app.player1.jump = False
@@ -572,7 +673,7 @@ def gravSimul(app):
         app.player2.dy += 3
         app.player2.y += app.player2.dy
     
-    for block in app.field.blocks:
+    for block in app.selectedField.blocks:
         if onBlock(app.player2, block):
             app.player2.y = block.y - app.player2.sizeY/2
             app.player2.jump = False
@@ -639,7 +740,7 @@ def bulletHit(app):
 
 #Bullet Disappear after hitting block
 def bulletHitBlock(app):
-    for block in app.field.blocks:
+    for block in app.selectedField.blocks:
         i = 0
         while i < len(app.projection):
             #Ideas from CS Academy 1.4.11

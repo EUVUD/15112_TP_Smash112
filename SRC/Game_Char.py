@@ -55,6 +55,7 @@ class Char:
     def attackChr(self):
         self.attack = True
         self.attackAni = True
+        self.attackCD = 15
 
     def jumpChr(self):
         self.jump = True
