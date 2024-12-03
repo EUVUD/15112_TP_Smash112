@@ -21,6 +21,11 @@ class Block:
 
     def __repr__(self):
         return f'{self.name}'
+    
+    def __eq__(self, other):
+        if isinstance(other, Block) and self.name == other.name:
+            return True
+        return False
 
 def fieldSetUp(app):
     # Field

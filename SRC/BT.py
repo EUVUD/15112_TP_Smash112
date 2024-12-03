@@ -7,6 +7,73 @@ import BT_Behavior
 import BT_Composite
 
 def btAiPlayer(app):
+
+    #Root
+    root = BT_Composite.Selector('root')
+
+    #Node 11
+    def sameLevel(app):
+        player1LastLoc = None
+        aiLastLoc = None
+        if app.player1.loc != None:
+            player1LastLoc = app.player1.loc
+        if app.player2.loc != None:
+            aiLastLoc = app.player2.loc
+        if player1LastLoc == aiLastLoc:
+            return 'Success'
+        return 'Failure'
+    
+    #Node 11211
+    def jumpRange(app):
+        if app.player1.loc.y - app.player2.loc.y < 200:
+            return True
+        return False
+    
+    def onLeft(app):
+        if app.player1.loc.x > app.player2.x + app.player2.sizeX:
+            return 'Success'
+        return 'Failure'
+    
+    def goRightSide(app):
+        if app.player1.loc.x != app.player2.x + app.player2.sizeX:
+            app.player2.dx = 1
+            app.player2.walk = True
+            app.player2.direction = 'right'
+        else:
+            app.player2.dx = 0
+            app.player2.walk = False
+        return 'Success'
+
+    def goLeftSide(app):
+        if app.player1.loc.x + app.player1.loc.sizeX != app.player2.x:
+            app.player2.dx = -1
+            app.player2.walk = True
+            app.player2.direction  = 'left'
+        else:
+            app.player2.dx = 0
+            app.player2.walk = False
+        return 'Success'
+    
+    def jumpMove(app):
+        app.player2.jumpChr()
+        if app.player2.y == app.player1.loc.y:
+            app.player2.direction = 'left'
+            app.player2.walk = True
+            app.player2.dx = -5
+        elif app.player2.y == app.player1.loc.y:
+            app.player2.direction = 'left'
+            app.player2.walk = True
+            app.player2.dx = -5
+        return 'Success'
+
+    #Node 11
+
+
+
+    
+
+
+
     def isHit(player1, player2):
         if (distance(player1.x+player1.sizeX/2, player1.y+player1.sizeY/2,
                     player2.x+player2.sizeX/2, player2.y+player2.sizeY/2)
@@ -49,8 +116,7 @@ def btAiPlayer(app):
         return 'Failure'
         
 
-    #Root
-    root = BT_Composite.Selector('root')
+    
     #Composite Node 1
     shootLogic = BT_Composite.Sequence('shootLogic')
     #Node 11
@@ -112,6 +178,7 @@ def btAiPlayer(app):
 
     def towardEnemy(app):
         if isHit(app.player1, app.player2):
+            app.player2.dx = 0
             app.player2.walk = False
             return 'Success'
         else:

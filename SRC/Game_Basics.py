@@ -515,14 +515,14 @@ def deterAtt(app):
 def playerLoc(app):
     for block in app.selectedField.blocks:
         if onBlock(app.player1, block):
-            app.player1.loc = f'{block}'
+            app.player1.loc = block
             break
         else:
             app.player1.loc = None
 
     for block in app.selectedField.blocks:
         if onBlock(app.player2, block):
-            app.player2.loc = f'{block}'
+            app.player2.loc = block
             break
         else:
             app.player2.loc = None
