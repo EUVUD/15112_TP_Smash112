@@ -118,7 +118,7 @@ def drawLargView(app):
             minY = block.y/3
             minSizeX = block.sizeX/3
             minSizeY = block.sizeY/3
-            drawRect(relativeX + minX, relativeY + minY, minSizeX, minSizeY)
+            drawRect(relativeX + minX, relativeY + minY, minSizeX, minSizeY, fill = block.color)
 
 #Code below are from CS Academy##############
 
@@ -129,7 +129,7 @@ def fieldSelection_onKeyPress(app, key):
     elif key == 'down' or key == 's':  moveSelection(app, +1, 0)
     if key == 'enter':
         currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
-        app.selectedField = app.fields[currRow][currRow]
+        app.selectedField = app.fields[currRow][currCol]
         setActiveScreen('game')
 
 def moveSelection(app, drow, dcol):
@@ -157,7 +157,7 @@ def drawCell(app, row, col):
             minY = block.y/4
             minSizeX = block.sizeX/4
             minSizeY = block.sizeY/4
-            drawRect(cellLeft + minX, cellTop + minY, minSizeX, minSizeY)
+            drawRect(cellLeft + minX, cellTop + minY, minSizeX, minSizeY, fill = block.color)
     drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=None, border= color,
              borderWidth=borderWidth)
@@ -195,7 +195,7 @@ def game_redrawAll(app):
 
 def drawField(app):
     for block in app.selectedField.blocks:
-        drawRect(block.x, block.y, block.sizeX, block.sizeY, fill = 'black')
+        drawRect(block.x, block.y, block.sizeX, block.sizeY, fill = block.color)
 
 
 def drawInstruction(app):
