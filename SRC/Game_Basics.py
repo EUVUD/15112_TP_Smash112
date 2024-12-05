@@ -86,6 +86,10 @@ def AiSelection_redrawAll(app):
                  align = 'center', border = 'red', borderWidth = 2)
     drawLabel('Multi-player', app.width/4, app.height/2, fill = 'blue', size=36)
     drawLabel('AI Mode', app.width/4*3, app.height/2, fill = 'red', size=36)
+    drawLabel('Use a and d, left and right to select', app.width/2, 450, 
+              fill = 'gold', size = 36)
+    drawLabel('Press enter to confirm selection', app.width/2, 
+              525, fill = 'gold', size = 36)
 
 def AiSelection_onKeyPress(app, key):
     if key == 'right' or key == 'd':
@@ -113,6 +117,10 @@ def fieldSelection_redrawAll(app):
     drawLabel('Field Selection', app.width/15*7 + 75, app.height/4 - 20, size = 22)
     drawBoard(app)
     drawBoardBorder(app)
+    drawLabel('Use wasd and up,left, down, right to select', app.width/2, 500, 
+              fill = 'gold', size = 36)
+    drawLabel('Press enter to confirm selection', app.width/2, 
+              550, fill = 'gold', size = 36)
 
 def drawLargView(app):
     currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
@@ -231,8 +239,11 @@ def characterSelection_redrawAll(app):
     if app.player1Selection == app.player2Selection:
         drawLabel('You cannot choose the same character!', app.width/2, app.height/2,
                   fill = 'darkRed', size = 30)
+    drawLabel('Use a and d, left and right to select', app.width/2, 20, 
+              fill = 'gold', size = 24)
+    drawLabel('Press enter to g for player 1, j for player 2 to confirm', app.width/2, 
+              45, fill = 'gold', size = 24)
         
-    
 
 def characterSelection_onKeyPress(app, key):
     if key == 'd':
@@ -281,14 +292,19 @@ def gameInstruction_redrawAll(app):
     drawImage('../Graphics/Background/gameInstruction.webp', 0, 0,
               width = app.width, height = app.height)
     drawRect(app.width/8, app.height/8, app.width/8*6, app.height/8*6, fill = 'grey')
-    drawLabel('Use w, a, s, d to move player 1', app.width/2, 130, size = 20)
+    drawLabel('Use w, a, s, d to move player 1', app.width/2, 100, size = 20)
+    drawLabel('Use up, left, down, right to move player 2', app.width/2, 130, size = 20)
+    drawImage('../Graphics/instruction/walk.png', app.width/2, 180, align = 'center')
     drawLabel('Use e to shoot, g to attack, h to defend and f to antidefend', 
-              app.width/2, 160, size = 20)
-    drawLabel('Use up, left, down, right to move player 2', app.width/2, 190, size = 20)
-    drawLabel('Use enter to shoot, l to attack, : to defend and k to antidefend', 
-              app.width/2,220, size = 20)
-    drawLabel('Health Bar indicate how many lives left', app.width/2, 250, size = 20)
-    drawLabel('If game over, press r to restart', app.width/2, 280, size = 20)
+              app.width/2, 230, size = 20)
+    drawLabel('Use enter to shoot, l to attack, ":" to defend and k to antidefend', 
+              app.width/2,260, size = 20)
+    drawImage('../Graphics/instruction/attack.png', app.width/4, 330, align = 'center')
+    drawImage('../Graphics/instruction/defend.png', app.width/4*2, 330, align = 'center')
+    drawImage('../Graphics/instruction/antiDefend.png', app.width/4*3, 330, align = 'center')
+    drawLabel('Health Bar indicate how many lives left', app.width/2, 400, size = 20)
+    drawImage('../Graphics/instruction/healthBar.png', app.width/2, 450, align = 'center')
+    drawLabel('Press any button to enter fighting field', app.width/2, 500, size = 30)
 
 def gameInstruction_onKeyPress(app, key):
     setActiveScreen('game')
