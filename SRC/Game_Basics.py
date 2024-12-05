@@ -20,6 +20,8 @@ def onAppStart(app):
     
 
 def reStart(app):
+    # Bullet
+    app.projection = []
     #AiSelection Page
     app.aiMode = None
     app.selectCounter = 0
@@ -29,18 +31,22 @@ def reStart(app):
     Game_Field.fieldList(app)
     app.fieldSelection = (0, 0)
     app.selectedField = None
+    #Character Selection
+    Game_Char.characterList(app)
+    app.player1Selection = 0
+    app.player2Selection = 1
+    app.player1ChoseStatus = False
+    app.player2ChoseStatus = False
     # Game Pause
     app.pause = False
-    # Bullet
-    app.projection = []
     #Player1 Basic Info and Sprite
-    app.player1 = Game_Char.Donatello(app.width/4, app.height/4,'right', app.projection)
+    app.player1 = None
     app.player1StandInd = 0
     app.player1WalkInd = 0
     app.player1AttackInd = 0
     app.player1AntiDefInd = 0
     #Player2 Basic Info and Sprite
-    app.player2 = Game_Char.Leonardo(3 * app.width/4, app.height/4,'left', app.projection)
+    app.player2 = None
     app.player2StandInd = 0
     app.player2WalkInd = 0
     app.player2AttackInd = 0
@@ -132,7 +138,7 @@ def fieldSelection_onKeyPress(app, key):
     if key == 'enter':
         currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
         app.selectedField = app.fields[currRow][currCol]
-        setActiveScreen('game')
+        setActiveScreen('characterSelection')
 
 def moveSelection(app, drow, dcol):
     if app.fieldSelection != None:
@@ -183,6 +189,110 @@ def drawBoardBorder(app):
 
 #Code above are from CS Academy##############
 
+# Character Selection
+
+def characterSelection_redrawAll(app):
+    drawImage('../Graphics/Background/characterSelection.webp', 0, 0, width = app.width,
+              height = app.height)
+    # Draw the selected player block
+    drawRect(app.width/8, app.height - 300, 250, 50, fill = 'blue')
+    drawLabel('Player1', app.width/8 + 250/2, app.height - 275, size = 25)
+    drawRect(app.width/8, app.height-250, 250, 250, fill = 'grey', border = 'black')
+    drawRect(app.width-app.width/8, app.height - 300, 250, 50, fill = 'red', 
+             align = 'right-top')
+    drawLabel('Player1', app.width-225, app.height - 275, size = 25)
+    drawRect(app.width-app.width/8, app.height-250, 250, 250, align = 'right-top',
+             fill = 'grey', border = 'black')
+    
+    # Draw the selected block
+    for i in range(len(app.chrList)):
+        drawRect(i*(app.width/5)+app.width/5, app.height/10, app.width/5, 
+                 app.height/3, fill = 'grey')
+        drawImage(f'{app.chrList[i].profileLoc}', i*(app.width/5)+app.width/5, app.height/10,
+                  width = app.width/5, height = app.height/3)
+        drawRect(i*(app.width/5)+app.width/5, app.height/10, app.width/5, 
+                    app.height/3, fill = None, border = 'black', borderWidth = 10)
+        color = None
+        if app.player1Selection != app.player2Selection:
+            if i == app.player1Selection:
+                color = 'blue'
+                drawImage(f'{app.chrList[i].profileLoc}', 125, app.height-250, 
+                        width = 225, height = 200)
+            elif i == app.player2Selection:
+                color = 'red'
+                drawImage(f'{app.chrList[i].profileLoc}', 675, 
+                        app.height-250, width = 225, height = 200, align = 'right-top')
+            drawRect(i*(app.width/5)+app.width/5, app.height/10, app.width/5, 
+                    app.height/3, fill = None, border = color, borderWidth = 10)
+    if app.player1ChoseStatus:
+        drawLabel('Ready', 125 + 225/2, 575, fill = 'blue', size = 30)
+    if app.player2ChoseStatus:
+        drawLabel('Ready', 675 - 225/2, 575, fill = 'red', size = 30)
+    if app.player1Selection == app.player2Selection:
+        drawLabel('You cannot choose the same character!', app.width/2, app.height/2,
+                  fill = 'red', size = 30)
+        
+    
+
+def characterSelection_onKeyPress(app, key):
+    if key == 'd':
+        app.player1Selection += 1
+        app.player1Selection %= 3
+    elif key == 'a':
+        app.player1Selection -= 1
+        app.player1Selection %= 3
+    if key == 'left':
+        app.player2Selection -= 1
+        app.player2Selection %= 3
+    elif key == 'right':
+        app.player2Selection += 1
+        app.player2Selection %= 3
+    if app.player1Selection != app.player2Selection:
+        if key == 'g':
+            if app.player1ChoseStatus:
+                app.player1ChoseStatus = False
+                app.player1.x = None
+                app.player1.direction = None
+                app.player1 = None
+            else:
+                app.player1ChoseStatus = True
+                app.player1 = app.chrList[app.player1Selection]
+                app.player1.x = app.width/4
+                app.player1.direction = 'right'
+        if key == 'j':
+            if app.player2ChoseStatus:
+                app.player2ChoseStatus = False
+                app.player2.x = None
+                app.player2.direction = None
+                app.player2 = None
+            else:
+                app.player2ChoseStatus = True
+                app.player2 = app.chrList[app.player2Selection]
+                app.player2.x = app.width/4*3
+                app.player2.direction = 'left'
+
+def characterSelection_onStep(app):
+    if app.player1ChoseStatus and app.player2ChoseStatus:
+        setActiveScreen('gameInstruction')
+
+#Game Instruction
+
+def gameInstruction_redrawAll(app):
+    drawImage('../Graphics/Background/gameInstruction.webp', 0, 0,
+              width = app.width, height = app.height)
+    drawRect(app.width/8, app.height/8, app.width/8*6, app.height/8*6, fill = 'grey')
+    drawLabel('Use w, a, s, d to move player 1', app.width/2, 130, size = 20)
+    drawLabel('Use e to shoot, g to attack, h to defend and f to antidefend', 
+              app.width/2, 160, size = 20)
+    drawLabel('Use up, left, down, right to move player 2', app.width/2, 190, size = 20)
+    drawLabel('Use enter to shoot, l to attack, : to defend and k to antidefend', 
+              app.width/2,220, size = 20)
+    drawLabel('Health Bar indicate how many lives left', app.width/2, 250, size = 20)
+    drawLabel('If game over, press r to restart', app.width/2, 280, size = 20)
+
+def gameInstruction_onKeyPress(app, key):
+    setActiveScreen('game')
+
 # Game Screen
 
 def game_redrawAll(app):
@@ -198,6 +308,13 @@ def game_redrawAll(app):
 def drawButton(app):
     drawImage('../Graphics/Background/setting.png', app.width - 70, 20, 
               width = 50, height = 50)
+    if app.pause:
+        drawRect(app.width/3, app.height/4, app.width/3, app.height/2, 
+                 fill = 'grey')
+        drawLabel('Resume', app.width/2, app.height/4+80, size = 40)
+        drawRect(app.width/2, app.height/4+80, 200, 50, fill = None, border = 'black', align = 'center')
+        drawLabel('Restart', app.width/2, app.height/4+200, size = 40)
+        drawRect(app.width/2, app.height/4+200, 200, 50, fill = None, border = 'black', align = 'center')
 
     
 
@@ -207,14 +324,9 @@ def drawField(app):
 
 
 def drawInstruction(app):
-    drawLabel('Use w, a, s, d to move the Donatello', app.width/2, 20, size = 14)
-    drawLabel('Use e to shoot, g to attack, h to defend and f to antidefend', app.width/2, 35, size = 14)
-    drawLabel('Use up, left, down, right to move Leonardo', app.width/2, 50, size = 14)
-    drawLabel('Use enter to shoot, l to attack, : to defend and k to antidefend', app.width/2, 65, size = 14)
-    drawLabel('Health Bar indicate how many lives left', app.width/2, 80, size = 14)
-    drawLabel('If game over, press r to restart', app.width/2, 95, size = 14)
     # Gameover:
     if app.gameOver == True:
+        drawLabel('Press r to restart', app.width/2, app.height/2+50, fill = 'red', size = 40)
         if app.aiMode == True:
             if app.player2.health == 0.1:
                 drawLabel('You Win!', app.width/2, app.height/2, fill = 'red', size = 40)
@@ -433,49 +545,61 @@ def game_onKeyHold(app, keys):
     if app.gameOver:
         return
     # Still Player1 Movement
-    if 'h' in keys:
-        app.player1.defend = True
-    elif 'a' in keys:
-        app.player1.direction = 'left'
-        app.player1.walk = True #Determine Motion
-        app.player1.dx = -5
-    elif 'd' in keys:
-        app.player1.direction = 'right'
-        app.player1.walk = True
-        app.player1.dx = 5
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
-    
-    # Player2 Movement:
-    if 'l' in keys:
-        app.player2.defend = True
-    elif 'left' in keys:
-        app.player2.direction = 'left'
-        app.player2.walk = True
-        app.player2.dx = -5
-    elif 'right' in keys:
-        app.player2.direction = 'right'
-        app.player2.walk = True
-        app.player2.dx = 5
+    if not app.pause:
+        if 'h' in keys:
+            app.player1.defend = True
+        elif 'a' in keys:
+            app.player1.direction = 'left'
+            app.player1.walk = True #Determine Motion
+            app.player1.dx = -5
+        elif 'd' in keys:
+            app.player1.direction = 'right'
+            app.player1.walk = True
+            app.player1.dx = 5
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+        
+        # Player2 Movement:
+        if 'l' in keys:
+            app.player2.defend = True
+        elif 'left' in keys:
+            app.player2.direction = 'left'
+            app.player2.walk = True
+            app.player2.dx = -5
+        elif 'right' in keys:
+            app.player2.direction = 'right'
+            app.player2.walk = True
+            app.player2.dx = 5
     
 
 def game_onKeyRelease(app, key):
     if app.gameOver:
         return 
-    if key == 'd' or key == 'a':
-        app.player1.walk = False
-        app.player1.dx = 0
-    elif key == 'h':
-        app.player1.defend = False
-    if key == 'left' or key == 'right':
-        app.player2.walk = False
-        app.player2.dx = 0
-    elif key == 'l':
-        app.player2.defend = False
+    if not app.pause:
+        if key == 'd' or key == 'a':
+            app.player1.walk = False
+            app.player1.dx = 0
+        elif key == 'h':
+            app.player1.defend = False
+        if key == 'left' or key == 'right':
+            app.player2.walk = False
+            app.player2.dx = 0
+        elif key == 'l':
+            app.player2.defend = False
 
-# def game_onMousePress(app, mouseX, mouseY):
-#     if not app.gameOver:
-#         if app.pause:
-#             if mouseX
+def game_onMousePress(app, mouseX, mouseY):
+    if not app.gameOver:
+        if not app.pause:
+            if (app.width - 70 < mouseX < app.width - 20
+                and 20 < mouseY < 70):
+                app.pause = True
+        if app.pause:
+            if (app.width/2 - 100 < mouseX < app.width/2 + 100
+                and app.height/4+55 < mouseY < app.height/4+105):
+                app.pause = False
+            if (app.width/2 - 100 < mouseX < app.width/2 + 100
+                and app.height/4+175 < mouseY < app.height/4+225):
+                setActiveScreen('start')
+                reStart(app)
 
 
 def game_onStep(app):

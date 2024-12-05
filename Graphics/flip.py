@@ -47,8 +47,8 @@ def flip_images_in_folder(input_folder, output_folder, flip_type="horizontal"):
         print(f"An error occurred: {e}")
 
 # Example usage
-input_folder = "/home/david_biolover/Documents/15112_TP/15112_TP_Smash112/Graphics/Leonardo_cropped/leonardo_antiRDefend"
-output_folder = "/home/david_biolover/Documents/15112_TP/15112_TP_Smash112/Graphics/Leonardo_cropped/leonardo_antiLDefend"
+input_folder = "/home/david_biolover/Documents/15112_TP/15112_TP_Smash112/Graphics/Raphael_cropped/raphael_rWalk"
+output_folder = "/home/david_biolover/Documents/15112_TP/15112_TP_Smash112/Graphics/Raphael_cropped/raphael_lWalk"
 flip_type = "horizontal"  # Change to "vertical" for vertical flip
 
 flip_images_in_folder(input_folder, output_folder, flip_type)

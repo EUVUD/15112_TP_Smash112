@@ -80,6 +80,7 @@ class Donatello(Char):
         self.lDefLoc = '../Graphics/Donatello_cropped/donatello_lDefend/sprite-removebg-preview.png'
         self.antiRDefLoc = '../Graphics/Donatello_cropped/donatello_antiRDefend/'
         self.antiLDefLoc = '../Graphics/Donatello_cropped/donatello_antiLDefend/'
+        self.profileLoc = '../Graphics/Donatello_cropped/donatello_profile/sprite-removebg-preview.png'
         self.rAttackSprite = [f'{self.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
         self.lAttackSprite = [f'{self.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
         self.rStandSprite = [f'{self.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
@@ -91,8 +92,6 @@ class Donatello(Char):
 
 
 class Leonardo(Char):
-    
-
     def __init__(self, x, y, direction, bulletList):
         super().__init__('Leonardo', x, y, 37, 43, 'Blue', direction, bulletList)
         self.rAttackLoc = '../Graphics/Leonardo_cropped/leonardo_rAttack'
@@ -106,6 +105,7 @@ class Leonardo(Char):
         self.lDefLoc = '../Graphics/Leonardo_cropped/leonardo_lDefend/sprite-removebg-preview.png'
         self.antiRDefLoc = '../Graphics/Leonardo_cropped/leonardo_antiRDefend/'
         self.antiLDefLoc = '../Graphics/Leonardo_cropped/leonardo_antiLDefend/'
+        self.profileLoc = '../Graphics/Leonardo_cropped/leonardo_profile/sprite-removebg-preview.png'
         self.rAttackSprite = [f'{self.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
         self.lAttackSprite = [f'{self.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
         self.rStandSprite = [f'{self.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
@@ -116,7 +116,35 @@ class Leonardo(Char):
         self.antiLDefSprite = [f'{self.antiLDefLoc}/{i}-removebg-preview.png' for i in range(7)]
 
 
+class Raphael(Char):
+    def __init__(self, x, y, direction, bulletList):
+        super().__init__('Raphael', x, y, 37, 43, 'Red', direction, bulletList)
+        self.rAttackLoc = '../Graphics/Raphael_cropped/raphael_rAttack'
+        self.lAttackLoc = '../Graphics/Raphael_cropped/raphael_lAttack'
+        self.rStandLoc = '../Graphics/Raphael_cropped/raphael_rStand'
+        self.rWalkLoc = '../Graphics/Raphael_cropped/raphael_rWalk'
+        self.lStandLoc = '../Graphics/Raphael_cropped/raphael_lStand'
+        self.lWalkLoc = '../Graphics/Raphael_cropped/raphael_lWalk'
+        self.headLoc = '../Graphics/Raphael_cropped/raphael_head/sprite-removebg-preview.png'
+        self.rDefLoc = '../Graphics/Raphael_cropped/raphael_rDefend/sprite-removebg-preview.png'
+        self.lDefLoc = '../Graphics/Raphael_cropped/raphael_lDefend/sprite-removebg-preview.png'
+        self.antiRDefLoc = '../Graphics/Raphael_cropped/raphael_antiRDefend/'
+        self.antiLDefLoc = '../Graphics/Raphael_cropped/raphael_antiLDefend/'
+        self.profileLoc = '../Graphics/Raphael_cropped/raphael_profile/sprite-removebg-preview.png'
+        self.rAttackSprite = [f'{self.rAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
+        self.lAttackSprite = [f'{self.lAttackLoc}/{i}-removebg-preview.png' for i in range(6)]
+        self.rStandSprite = [f'{self.rStandLoc}/{i}-removebg-preview.png' for i in range(12)]
+        self.rWalkSprite = [f'{self.rWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
+        self.lStandSprite = [f'{self.lStandLoc}/{i}-removebg-preview.png' for i in range(12)]
+        self.lWalkSprite = [f'{self.lWalkLoc}/{i}-removebg-preview.png' for i in range(12, 22)]
+        self.antiRDefSprite = [f'{self.antiRDefLoc}/{i}-removebg-preview.png' for i in range(7)]
+        self.antiLDefSprite = [f'{self.antiLDefLoc}/{i}-removebg-preview.png' for i in range(7)]
 
-
-
-
+def characterList(app):
+    app.chrList = []
+    donatello = Donatello(None, app.height/4,None, app.projection)
+    leonardo = Leonardo(None, app.height/4,None, app.projection)
+    raphael = Raphael(None, app.height/4,None, app.projection)
+    app.chrList.append(donatello)
+    app.chrList.append(leonardo)
+    app.chrList.append(raphael)
