@@ -29,6 +29,8 @@ def reStart(app):
     Game_Field.fieldList(app)
     app.fieldSelection = (0, 0)
     app.selectedField = None
+    # Game Pause
+    app.pause = False
     # Bullet
     app.projection = []
     #Player1 Basic Info and Sprite
@@ -191,6 +193,12 @@ def game_redrawAll(app):
     drawPlayer1(app)
     drawPlayer2(app)
     drawBullet(app)
+    drawButton(app)
+
+def drawButton(app):
+    drawImage('../Graphics/Background/setting.png', app.width - 70, 20, 
+              width = 50, height = 50)
+
     
 
 def drawField(app):
@@ -378,30 +386,32 @@ def drawBullet(app):
 def game_onKeyPress(app, key):
     if not app.gameOver:
         #Jump
-        if not app.player1.defend:
-        # Player1 Action
-            if key == 'w':
-                if app.player1.jump == False:
-                    app.player1.jumpChr()
-            #Shoot the bullet
-            if key == 'e' and app.player1.shuriCD == 0:
-                app.player1.shootChr()
-            elif key == 'g' and app.player1.attackCD == 0:
-                app.player1.attackChr()
-            elif key == 'f' and app.player1.antiDefCD == 0:
-                app.player1.antiDefendChr()
-                
-        # Player2 Action
-        if not app.player2.defend:
-            if key == 'up':
-                if app.player2.jump == False:
-                    app.player2.jumpChr()
-            if key == 'enter' and app.player2.shuriCD == 0:
-                app.player2.shootChr()
-            elif key == 'k' and app.player2.attackCD == 0:
-                app.player2.attackChr()
-            elif key == ';' and app.player2.antiDefCD == 0:
-                app.player2.antiDefendChr()
+        if not app.pause:
+            if not app.player1.defend:
+            # Player1 Action
+                if key == 'w':
+                    if app.player1.jump == False:
+                        app.player1.jumpChr()
+                #Shoot the bullet
+                if key == 'e' and app.player1.shuriCD == 0:
+                    app.player1.shootChr()
+                elif key == 'g' and app.player1.attackCD == 0:
+                    app.player1.attackChr()
+                elif key == 'f' and app.player1.antiDefCD == 0:
+                    app.player1.antiDefendChr()
+                    
+            # Player2 Action
+            if not app.player2.defend:
+                if key == 'up':
+                    if app.player2.jump == False:
+                        app.player2.jumpChr()
+                if key == 'enter' and app.player2.shuriCD == 0:
+                    app.player2.shootChr()
+                elif key == 'k' and app.player2.attackCD == 0:
+                    app.player2.attackChr()
+                elif key == ';' and app.player2.antiDefCD == 0:
+                    app.player2.antiDefendChr()
+
                 
     #Restart the game
     if app.gameOver == True:
@@ -462,25 +472,31 @@ def game_onKeyRelease(app, key):
     elif key == 'l':
         app.player2.defend = False
 
+# def game_onMousePress(app, mouseX, mouseY):
+#     if not app.gameOver:
+#         if app.pause:
+#             if mouseX
+
 
 def game_onStep(app):
     if not app.gameOver:
-        if app.aiMode == True:
-            BT.btAiPlayer(app).tick()
-        deterGameOver(app)
-        gravSimul(app)
-        bulletFly(app)
-        bulletHit(app)
-        spriteInd(app)
-        attackCD(app)
-        deterRise(app)
-        playerLoc(app)
-        bulletHitBlock(app)
-        walkMot(app)
-        boundedMotion(app)
-        deterAtt(app)
-        bloodFixed(app)
-        app.counter += 1
+        if not app.pause:
+            if app.aiMode == True:
+                BT.btAiPlayer(app).tick()
+            deterGameOver(app)
+            gravSimul(app)
+            bulletFly(app)
+            bulletHit(app)
+            spriteInd(app)
+            attackCD(app)
+            deterRise(app)
+            playerLoc(app)
+            bulletHitBlock(app)
+            walkMot(app)
+            boundedMotion(app)
+            deterAtt(app)
+            bloodFixed(app)
+            app.counter += 1
 
 # Prevent bugs where health bar can go non-positive
 def bloodFixed(app):

@@ -55,9 +55,9 @@ def fieldSetUp(app):
 
     #Field 3
     app.field3 = Field('Volcano', '../Graphics/Background/volcano.png')
-    app.pyramidBottom = Block('pyramidBottom', 0, 500, app.width, app.height-500, 'red')
-    app.pyramidMiddle = Block('pyramidMiddle', app.width/4, 350, app.width/2, 150, 'red')
-    app.pyramidTop = Block('pyramidTop', app.width/3, 250, app.width/3, 100, 'red')
+    app.pyramidBottom = Block('pyramidBottom', 0, 500, app.width, app.height-500, 'darkRed')
+    app.pyramidMiddle = Block('pyramidMiddle', app.width/4, 350, app.width/2, 150, 'darkRed')
+    app.pyramidTop = Block('pyramidTop', app.width/3, 250, app.width/3, 100, 'darkRed')
     app.field3.add(app.pyramidBottom)
     app.field3.add(app.pyramidMiddle)
     app.field3.add(app.pyramidTop)
