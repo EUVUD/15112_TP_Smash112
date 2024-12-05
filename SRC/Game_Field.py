@@ -1,3 +1,4 @@
+#Field Images are from https://www.spriters-resource.com/ms_dos/dukenukem2/sheet/24155/
 class Field:
     def __init__(self, name, image):
         self.name = name

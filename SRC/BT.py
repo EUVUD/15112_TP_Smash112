@@ -11,68 +11,6 @@ def btAiPlayer(app):
     #Root
     root = BT_Composite.Selector('root')
 
-    #Node 11
-    def sameLevel(app):
-        player1LastLoc = None
-        aiLastLoc = None
-        if app.player1.loc != None:
-            player1LastLoc = app.player1.loc
-        if app.player2.loc != None:
-            aiLastLoc = app.player2.loc
-        if player1LastLoc == aiLastLoc:
-            return 'Success'
-        return 'Failure'
-    
-    #Node 11211
-    def jumpRange(app):
-        if app.player1.loc.y - app.player2.loc.y < 200:
-            return True
-        return False
-    
-    def onLeft(app):
-        if app.player1.loc.x > app.player2.x + app.player2.sizeX:
-            return 'Success'
-        return 'Failure'
-    
-    def goRightSide(app):
-        if app.player1.loc.x != app.player2.x + app.player2.sizeX:
-            app.player2.dx = 1
-            app.player2.walk = True
-            app.player2.direction = 'right'
-        else:
-            app.player2.dx = 0
-            app.player2.walk = False
-        return 'Success'
-
-    def goLeftSide(app):
-        if app.player1.loc.x + app.player1.loc.sizeX != app.player2.x:
-            app.player2.dx = -1
-            app.player2.walk = True
-            app.player2.direction  = 'left'
-        else:
-            app.player2.dx = 0
-            app.player2.walk = False
-        return 'Success'
-    
-    def jumpMove(app):
-        app.player2.jumpChr()
-        if app.player2.y == app.player1.loc.y:
-            app.player2.direction = 'left'
-            app.player2.walk = True
-            app.player2.dx = -5
-        elif app.player2.y == app.player1.loc.y:
-            app.player2.direction = 'left'
-            app.player2.walk = True
-            app.player2.dx = -5
-        return 'Success'
-
-    #Node 11
-
-
-
-    
-
-
 
     def isHit(player1, player2):
         if (distance(player1.x+player1.sizeX/2, player1.y+player1.sizeY/2,
@@ -114,6 +52,12 @@ def btAiPlayer(app):
         elif app.player2.jump:
             return 'Running'
         return 'Failure'
+    
+    def deterJump(app):
+        if app.player1.y < app.player2.y:
+            return 'Success'
+        else:
+            return 'Failure'
         
 
     
@@ -132,8 +76,10 @@ def btAiPlayer(app):
     #Composite Node 122
     jumpShoot = BT_Composite.Sequence('jumpShoot')
     #Node 1221
+    deterJum = BT_Behavior.Condition(deterJump, 'deterJum', app)
+    #Node 1222
     actualJum = BT_Behavior.Action(actualJump, 'actualJum', app)
-    #Composite Node 1222
+    #Composite Node 1223
     jumpShootTime = BT_Composite.Sequence('jumpShootTime')
     #Node 12221
     sameHei = BT_Behavior.Condition(sameHeight, 'sameHei', app)
@@ -143,6 +89,7 @@ def btAiPlayer(app):
     plainShoot.add(shootRan)
     plainShoot.add(actualSho)
 
+    jumpShoot.add(deterJum)
     jumpShoot.add(actualJum)
 
     jumpShootTime.add(sameHei)

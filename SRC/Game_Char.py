@@ -29,8 +29,6 @@ class Char:
         self.bulletList = bulletList
         self.health = 5
         self.attackComb = 1
-        self.rise = False
-        self.loc = None
         self.defend = False
         self.antiDefend = False
         self.antiDefCD = 0
