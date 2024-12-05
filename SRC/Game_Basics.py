@@ -230,7 +230,7 @@ def characterSelection_redrawAll(app):
         drawLabel('Ready', 675 - 225/2, 575, fill = 'red', size = 30)
     if app.player1Selection == app.player2Selection:
         drawLabel('You cannot choose the same character!', app.width/2, app.height/2,
-                  fill = 'red', size = 30)
+                  fill = 'darkRed', size = 30)
         
     
 
@@ -635,16 +635,16 @@ def deterAtt(app):
                     and not app.player1.defend):
                     app.player1.health -= 1
                     app.player2.attack = False
-    if (isHit(app.player1, app.player2) and app.player1.attack
+    elif (isHit(app.player1, app.player2) and app.player1.attack
                     and not app.player2.defend):
                     app.player2.health -= 1
                     app.player1.attack = False
-    if (isHit(app.player1, app.player2) and app.player2.antiDefend
+    elif (isHit(app.player1, app.player2) and app.player2.antiDefend
                     and app.player1.defend):
                     app.player1.health -= 1
                     app.player1.defend = False
                     app.player2.antiDefend = False
-    if (isHit(app.player1, app.player2) and app.player1.antiDefend
+    elif (isHit(app.player1, app.player2) and app.player1.antiDefend
                     and app.player2.defend):
                     app.player2.health -= 1
                     app.player2.defend = False
