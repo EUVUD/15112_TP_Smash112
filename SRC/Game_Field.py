@@ -63,7 +63,7 @@ def fieldSetUp(app):
     app.field3.add(app.pyramidTop)
 
     #Field 4
-    app.field4 = Field('powerOfNature', '../Graphics/Background/powerOfNature.png')
+    app.field4 = Field('Power of Nature', '../Graphics/Background/powerOfNature.png')
     app.grassGround = Block('grassG', 0, 450, app.width, app.height-450, 'green')
     app.shortLevel = Block('shortLevel', 100, 350, 200, 20, 'black')
     app.middleLevel = Block('middleLevel', 330, 250, 150, 20, 'black')

@@ -200,7 +200,7 @@ def characterSelection_redrawAll(app):
     drawRect(app.width/8, app.height-250, 250, 250, fill = 'grey', border = 'black')
     drawRect(app.width-app.width/8, app.height - 300, 250, 50, fill = 'red', 
              align = 'right-top')
-    drawLabel('Player1', app.width-225, app.height - 275, size = 25)
+    drawLabel('Player2', app.width-225, app.height - 275, size = 25)
     drawRect(app.width-app.width/8, app.height-250, 250, 250, align = 'right-top',
              fill = 'grey', border = 'black')
     
