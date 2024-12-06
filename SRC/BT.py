@@ -7,7 +7,6 @@ import BT_Behavior
 import BT_Composite
 
 def btAiPlayer(app):
-
     #Root
     root = BT_Composite.Selector('root')
 

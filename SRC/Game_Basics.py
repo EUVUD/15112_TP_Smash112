@@ -78,7 +78,8 @@ def AiSelection_redrawAll(app):
     if app.selectCounter % 2 == 0:
         drawRect(app.width/4, app.height/2, app.width/3, app.height/4, 
                  align = 'center', border = 'red', borderWidth = 2)
-        drawRect(app.width/4*3, app.height/2, app.width/3, app.height/4, align = 'center')
+        drawRect(app.width/4*3, app.height/2, app.width/3, app.height/4, 
+                 align = 'center')
     else:
         drawRect(app.width/4, app.height/2, app.width/3, app.height/4, 
                  align = 'center')
@@ -94,9 +95,9 @@ def AiSelection_redrawAll(app):
 def AiSelection_onKeyPress(app, key):
     if key == 'right' or key == 'd':
         app.selectCounter += 1
-    if key == 'left' or key == 'a':
+    elif key == 'left' or key == 'a':
         app.selectCounter -= 1
-    if key == 'enter':
+    elif key == 'enter':
         if app.selectCounter % 2 == 1:
             app.aiMode = True
         setActiveScreen('fieldSelection')
@@ -165,6 +166,7 @@ def drawCell(app, row, col):
     cellWidth, cellHeight = getCellSize(app)
     color = 'red' if (row, col) == app.fieldSelection else 'black'
     borderWidth = 3 if (row, col) == app.fieldSelection else 1
+    #Some of own code here to draw the mini window view
     if app.fields[row][col] != None:
         drawImage(app.fields[row][col].image, cellLeft, cellTop, 
                 width = app.width/4, height = app.height/4)
@@ -316,8 +318,11 @@ def game_redrawAll(app):
     drawImage(app.selectedField.image, 0, 0, width = app.width, height = app.height)
     drawField(app)
     drawInstruction(app)
-    drawPlayer1(app)
-    drawPlayer2(app)
+    drawPlayer(app, app.player1, app.player1AntiDefInd, app.player1AttackInd,
+               app.player1WalkInd, app.player1StandInd)
+    drawPlayer(app, app.player2, app.player2AntiDefInd, app.player2AttackInd,
+               app.player2WalkInd, app.player2StandInd)
+    drawPlayerHealth(app)
     drawBullet(app)
     drawButton(app)
 
@@ -331,9 +336,8 @@ def drawButton(app):
         drawRect(app.width/2, app.height/4+80, 200, 50, fill = None, border = 'black', align = 'center')
         drawLabel('Restart', app.width/2, app.height/4+200, size = 40)
         drawRect(app.width/2, app.height/4+200, 200, 50, fill = None, border = 'black', align = 'center')
-
-    
-
+  
+# Draw the fighting field
 def drawField(app):
     for block in app.selectedField.blocks:
         drawRect(block.x, block.y, block.sizeX, block.sizeY, fill = block.color)
@@ -354,149 +358,91 @@ def drawInstruction(app):
             else:
                 drawLabel('Player1 Win!', app.width/2, app.height/2, fill = 'red', size = 40)
 
-def drawPlayer1(app):
+def drawPlayerHealth(app):
     #Draw Player 1 lives left
-    headDim = getImageSize(app.player1.headLoc)
+    headDim1 = getImageSize(app.player1.headLoc)
     # Background
-    drawRect(0, app.height - headDim[1]*1.5, 200, headDim[1]*1.5, fill = 'purple')
+    drawRect(0, app.height - headDim1[1]*1.5, 200, headDim1[1]*1.5, fill = 'purple')
     drawLabel(f'{app.player1.name}', 70, app.height - 60, fill = 'purple', size = 20)
-    drawRect(headDim[0]*1.5, app.height - headDim[1]*1.5 + 5,
-             app.player1.health/5*150+0.1, headDim[1]*1.5 - 10, fill = 'red',
+    drawRect(headDim1[0]*1.5, app.height - headDim1[1]*1.5 + 5,
+             app.player1.health/5*150+0.1, headDim1[1]*1.5 - 10, fill = 'red',
              border = 'silver', borderWidth = 2)
     #Head Profile
-    drawImage(app.player1.headLoc, 0, app.height - headDim[1]*1.5, 
-              width = headDim[0]*1.5, height = headDim[1]*1.5)
-    # draw Player1 with Sprite
-    if app.player1.direction == 'left': #Direction Left
-        if app.player1.antiDefendAni:
-            imageDimension = getImageSize(app.player1.antiLDefSprite[app.player1AntiDefInd])
-            imageWidth = imageDimension[0]
-            imageHeight = imageDimension[1]
-            drawImage(app.player1.antiLDefSprite[app.player1AntiDefInd],
-                      app.player1.x, app.player1.y-imageHeight/4,
-                      width = imageWidth, height = imageHeight,
-                      align = 'center')
-        elif app.player1.defend:
-            drawCircle(app.player1.x, app.player1.y, 30, fill = 'red', opacity = 20, border = 'silver')
-            drawImage(app.player1.lDefLoc, app.player1.x, app.player1.y, align = 'center')
-        elif app.player1.attackAni:
-            imageDimension = getImageSize(app.player1.lAttackSprite[app.player1AttackInd])
-            imageWidth = imageDimension[0]
-            drawImage(app.player1.lAttackSprite[app.player1AttackInd],
-                      app.player1.x, app.player1.y,
-                      width = imageWidth, height = app.player1.sizeY,
-                      align = 'center')
-        elif app.player1.walk: 
-            drawImage(app.player1.lWalkSprite[app.player1WalkInd], app.player1.x, app.player1.y,
-                    width = app.player1.sizeX, height = app.player1.sizeY,
-                    align = 'center')
-        else: 
-            drawImage(app.player1.lStandSprite[app.player1StandInd], app.player1.x, app.player1.y,
-                    width = app.player1.sizeX, height = app.player1.sizeY,
-                    align = 'center')
-    else: # Direction Right or Initial
-        if app.player1.antiDefendAni:
-            imageDimension = getImageSize(app.player1.antiRDefSprite[app.player1AntiDefInd])
-            imageWidth = imageDimension[0]
-            imageHeight = imageDimension[1]
-            drawImage(app.player1.antiRDefSprite[app.player1AntiDefInd],
-                      app.player1.x, app.player1.y-imageHeight/4,
-                      width = imageWidth, height = imageHeight,
-                      align = 'center')
-        elif app.player1.defend:
-            drawCircle(app.player1.x, app.player1.y, 30, fill = 'red', opacity = 20, border = 'silver')
-            drawImage(app.player1.rDefLoc, app.player1.x, app.player1.y, align = 'center')
-        elif app.player1.attackAni:
-            imageDimension = getImageSize(app.player1.rAttackSprite[app.player1AttackInd])
-            imageWidth = imageDimension[0]
-            drawImage(app.player1.rAttackSprite[app.player1AttackInd],
-                      app.player1.x, app.player1.y,
-                      width = imageWidth, height = app.player1.sizeY,
-                      align = 'center')
-        elif app.player1.walk:
-            drawImage(app.player1.rWalkSprite[app.player1WalkInd], app.player1.x, app.player1.y,
-                    width = app.player1.sizeX, height = app.player1.sizeY,
-                    align = 'center')
-        else:
-            drawImage(app.player1.rStandSprite[app.player1StandInd], app.player1.x, app.player1.y,
-                    width = app.player1.sizeX, height = app.player1.sizeY,
-                    align = 'center')
-    
-   
-def drawPlayer2(app):
+    drawImage(app.player1.headLoc, 0, app.height - headDim1[1]*1.5, 
+              width = headDim1[0]*1.5, height = headDim1[1]*1.5)
     #Draw Player 2 lives left
-    drawLabel('Leonardo health', app.width - 70, app.height - 40, fill = 'blue')
-    headDim = getImageSize(app.player1.headLoc)
+    drawLabel(f'{app.player2.name}', app.width - 70, app.height - 40, fill = 'blue')
+    headDim2 = getImageSize(app.player1.headLoc)
     # Background
-    drawRect(app.width - 200, app.height - headDim[1]*1.5, 200, headDim[1]*1.5, 
+    drawRect(app.width - 200, app.height - headDim2[1]*1.5, 200, headDim2[1]*1.5, 
              fill = 'blue')
     drawLabel(f'{app.player2.name}', app.width - 70, app.height - 60,
               fill = 'blue', size = 20)
-    drawRect(app.width - headDim[0]*1.5 - (app.player2.health/5*150), 
-             app.height - headDim[1]*1.5 + 5,
+    drawRect(app.width - headDim2[0]*1.5 - (app.player2.health/5*150), 
+             app.height - headDim2[1]*1.5 + 5,
              app.player2.health/5*150+0.1, 
-             headDim[1]*1.5 - 10, fill = 'red',
+             headDim2[1]*1.5 - 10, fill = 'red',
              border = 'silver', borderWidth = 2)
     #Head Profile
     drawImage(app.player2.headLoc, 
-              app.width - headDim[0]*1.5, 
-              app.height - headDim[1]*1.5, 
-              width = headDim[0]*1.5, height = headDim[1]*1.5)
+              app.width - headDim2[0]*1.5, 
+              app.height - headDim2[1]*1.5, 
+              width = headDim2[0]*1.5, height = headDim2[1]*1.5)
 
-    # draw Player2 with Sprite
-    if app.player2.direction == 'right':
-        if app.player2.antiDefendAni:
-            imageDimension = getImageSize(app.player2.antiRDefSprite[app.player2AntiDefInd])
+def drawPlayer(app, player, playerAntiDefInd, playerAttackInd, playerWalkInd, playerStandInd):
+    if player.direction == 'left': #Direction Left
+        if player.antiDefendAni:
+            imageDimension = getImageSize(player.antiLDefSprite[playerAntiDefInd])
             imageWidth = imageDimension[0]
             imageHeight = imageDimension[1]
-            drawImage(app.player2.antiRDefSprite[app.player2AntiDefInd],
-                      app.player2.x, app.player2.y-imageHeight/4,
+            drawImage(player.antiLDefSprite[playerAntiDefInd],
+                      player.x, player.y-imageHeight/4,
                       width = imageWidth, height = imageHeight,
                       align = 'center')
-        elif app.player2.defend:
-            drawCircle(app.player2.x, app.player2.y, 30, fill = 'red', opacity = 20, border = 'silver')
-            drawImage(app.player2.rDefLoc, app.player2.x, app.player2.y, align = 'center')
-        elif app.player2.attackAni:
-            imageDimension = getImageSize(app.player2.rAttackSprite[app.player2AttackInd])
+        elif player.defend:
+            drawCircle(player.x, player.y, 30, fill = 'red', opacity = 20, border = 'silver')
+            drawImage(player.lDefLoc, player.x, player.y, align = 'center')
+        elif player.attackAni:
+            imageDimension = getImageSize(player.lAttackSprite[playerAttackInd])
             imageWidth = imageDimension[0]
-            drawImage(app.player2.rAttackSprite[app.player2AttackInd],
-                      app.player2.x, app.player2.y,
-                      width = imageWidth, height = app.player2.sizeY,
+            drawImage(player.lAttackSprite[playerAttackInd],
+                      player.x, player.y,
+                      width = imageWidth, height = player.sizeY,
                       align = 'center')
-        elif app.player2.walk: #Walk
-            drawImage(app.player2.rWalkSprite[app.player2WalkInd], app.player2.x, app.player2.y,
-                    width = app.player2.sizeX, height = app.player2.sizeY,
+        elif player.walk: 
+            drawImage(player.lWalkSprite[playerWalkInd], player.x, player.y,
+                    width = player.sizeX, height = player.sizeY,
                     align = 'center')
-        else: #Walk
-            drawImage(app.player2.rStandSprite[app.player2StandInd], app.player2.x, app.player2.y,
-                    width = app.player2.sizeX, height = app.player2.sizeY,
+        else: 
+            drawImage(player.lStandSprite[playerStandInd], player.x, player.y,
+                    width = player.sizeX, height = player.sizeY,
                     align = 'center')
-    else:
-        if app.player2.antiDefendAni:
-            imageDimension = getImageSize(app.player2.antiLDefSprite[app.player2AntiDefInd])
+    elif player.direction == 'right': # Direction Right
+        if player.antiDefendAni:
+            imageDimension = getImageSize(player.antiRDefSprite[app.player1AntiDefInd])
             imageWidth = imageDimension[0]
             imageHeight = imageDimension[1]
-            drawImage(app.player2.antiLDefSprite[app.player2AntiDefInd],
-                    app.player2.x, app.player2.y-imageHeight/4,
-                    width = imageWidth, height = imageHeight,
-                    align = 'center')
-        elif app.player2.defend:
-            drawCircle(app.player2.x, app.player2.y, 30, fill = 'red', opacity = 20, border = 'silver')
-            drawImage(app.player2.lDefLoc, app.player2.x, app.player2.y, align = 'center')
-        elif app.player2.attackAni:
-            imageDimension = getImageSize(app.player2.lAttackSprite[app.player2AttackInd])
-            imageWidth = imageDimension[0]
-            drawImage(app.player2.lAttackSprite[app.player2AttackInd],
-                      app.player2.x, app.player2.y,
-                      width = imageWidth, height = app.player2.sizeY,
+            drawImage(player.antiRDefSprite[app.player1AntiDefInd],
+                      player.x, player.y-imageHeight/4,
+                      width = imageWidth, height = imageHeight,
                       align = 'center')
-        elif app.player2.walk:
-            drawImage(app.player2.lWalkSprite[app.player2WalkInd], app.player2.x, app.player2.y,
-                    width = app.player2.sizeX, height = app.player2.sizeY,
+        elif player.defend:
+            drawCircle(player.x, player.y, 30, fill = 'red', opacity = 20, border = 'silver')
+            drawImage(player.rDefLoc, player.x, player.y, align = 'center')
+        elif player.attackAni:
+            imageDimension = getImageSize(player.rAttackSprite[app.player1AttackInd])
+            imageWidth = imageDimension[0]
+            drawImage(player.rAttackSprite[app.player1AttackInd],
+                      player.x, player.y,
+                      width = imageWidth, height = player.sizeY,
+                      align = 'center')
+        elif player.walk:
+            drawImage(player.rWalkSprite[app.player1WalkInd], player.x, player.y,
+                    width = player.sizeX, height = player.sizeY,
                     align = 'center')
         else:
-            drawImage(app.player2.lStandSprite[app.player2StandInd], app.player2.x, app.player2.y,
-                    width = app.player2.sizeX, height = app.player2.sizeY,
+            drawImage(player.rStandSprite[app.player1StandInd], player.x, player.y,
+                    width = player.sizeX, height = player.sizeY,
                     align = 'center')
 
 
@@ -717,6 +663,7 @@ def spriteInd(app):
         app.bulletLeftInd = (app.bulletLeftInd + 1) % len(app.lShuriSprite)
 
     if app.counter % 4 == 0:
+        # AntiDefense Sprite
         if app.player1.antiDefendAni:
             if app.player1AntiDefInd == len(app.player1.antiRDefSprite)-1:
                 app.player1.antiDefend = False
@@ -733,7 +680,7 @@ def spriteInd(app):
                 app.player2AntiDefInd = 0
             app.player2AntiDefInd += 1
 
-            
+# Determine whether character hits the block
 def boundedMotion(app):
     hitBlockLeft(app, app.player1)
     hitBlockLeft(app, app.player2)
@@ -821,7 +768,7 @@ def walkMot(app):
         app.player2.x += app.player2.dx
     
 
-
+# Whether the character stands on the block
 def onBlock(player, block):
     if block.x - player.sizeX/2 < player.x < block.x + block.sizeX + player.sizeX/2:
         if (block.y + player.dy - player.sizeY/2 >= player.y 
@@ -829,6 +776,7 @@ def onBlock(player, block):
             return True
     return False
 
+# Whether the character hits the bottom of the block
 def downBlock(player, block):
     if block.x - player.sizeX/2 <= player.x <= block.x + block.sizeX + player.sizeX/2:
         if block.y+block.sizeY+player.dy <= player.y-player.sizeY/2 <= block.y+block.sizeY:
