@@ -106,8 +106,8 @@ def AiSelection_onKeyPress(app, key):
 def fieldSelection_redrawAll(app):
     drawImage('../Graphics/Background/fieldSelection.webp',
               0, 0, width = app.width, height = app.height)
-    drawRect(app.width/4, app.height/2, app.width/3, app.height/3, align = 'center',
-             fill = None, border = 'black')
+    drawRect(app.width/4, app.height/2, app.width/3, app.height/3, 
+             align = 'center', fill = None, border = 'black')
     drawRect(app.width/4, app.height/2 + app.height/5, app.width/3, 40,
              fill = 'purple', border = 'grey', align = 'center')
     currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
@@ -115,7 +115,8 @@ def fieldSelection_redrawAll(app):
     drawLabel(f'{name}', app.width/4, app.height/2 + app.height/5, size = 22)
     drawLargView(app)
     drawRect(app.width/15*7, app.height/4 - 40, 150, 40, fill = 'purple')
-    drawLabel('Field Selection', app.width/15*7 + 75, app.height/4 - 20, size = 22)
+    drawLabel('Field Selection', app.width/15*7 + 75, app.height/4 - 20, 
+              size = 22)
     drawBoard(app)
     drawBoardBorder(app)
     drawLabel('Use wasd and up,left, down, right to select', app.width/2, 500, 
@@ -135,7 +136,8 @@ def drawLargView(app):
             minY = block.y/3
             minSizeX = block.sizeX/3
             minSizeY = block.sizeY/3
-            drawRect(relativeX + minX, relativeY + minY, minSizeX, minSizeY, fill = block.color)
+            drawRect(relativeX + minX, relativeY + minY, minSizeX, minSizeY, 
+                     fill = block.color)
 
 #Code below are from CS Academy##############
 
@@ -175,7 +177,8 @@ def drawCell(app, row, col):
             minY = block.y/4
             minSizeX = block.sizeX/4
             minSizeY = block.sizeY/4
-            drawRect(cellLeft + minX, cellTop + minY, minSizeX, minSizeY, fill = block.color)
+            drawRect(cellLeft + minX, cellTop + minY, minSizeX, minSizeY, 
+                     fill = block.color)
     drawRect(cellLeft, cellTop, cellWidth, cellHeight,
              fill=None, border= color,
              borderWidth=borderWidth)
@@ -202,26 +205,29 @@ def drawBoardBorder(app):
 # Character Selection
 
 def characterSelection_redrawAll(app):
-    drawImage('../Graphics/Background/characterSelection.webp', 0, 0, width = app.width,
+    drawImage('../Graphics/Background/characterSelection.webp', 0, 0, 
+              width = app.width,
               height = app.height)
     # Draw the selected player block
     drawRect(app.width/8, app.height - 300, 250, 50, fill = 'blue')
     drawLabel('Player1', app.width/8 + 250/2, app.height - 275, size = 25)
-    drawRect(app.width/8, app.height-250, 250, 250, fill = 'grey', border = 'black')
+    drawRect(app.width/8, app.height-250, 250, 250, fill = 'grey', 
+             border = 'black')
     drawRect(app.width-app.width/8, app.height - 300, 250, 50, fill = 'red', 
              align = 'right-top')
     drawLabel('Player2', app.width-225, app.height - 275, size = 25)
-    drawRect(app.width-app.width/8, app.height-250, 250, 250, align = 'right-top',
-             fill = 'grey', border = 'black')
+    drawRect(app.width-app.width/8, app.height-250, 250, 250, 
+             align = 'right-top', fill = 'grey', border = 'black')
     
     # Draw the selected block
     for i in range(len(app.chrList)):
         drawRect(i*(app.width/5)+app.width/5, app.height/10, app.width/5, 
                  app.height/3, fill = 'grey')
-        drawImage(f'{app.chrList[i].profileLoc}', i*(app.width/5)+app.width/5, app.height/10,
-                  width = app.width/5, height = app.height/3)
+        drawImage(f'{app.chrList[i].profileLoc}', i*(app.width/5)+app.width/5, 
+                  app.height/10, width = app.width/5, height = app.height/3)
         drawRect(i*(app.width/5)+app.width/5, app.height/10, app.width/5, 
-                    app.height/3, fill = None, border = 'black', borderWidth = 10)
+                    app.height/3, fill = None, border = 'black', 
+                    borderWidth = 10)
         color = None
         if app.player1Selection != app.player2Selection:
             if i == app.player1Selection:
@@ -231,7 +237,8 @@ def characterSelection_redrawAll(app):
             elif i == app.player2Selection:
                 color = 'red'
                 drawImage(f'{app.chrList[i].profileLoc}', 675, 
-                        app.height-250, width = 225, height = 200, align = 'right-top')
+                        app.height-250, width = 225, height = 200, 
+                        align = 'right-top')
             drawRect(i*(app.width/5)+app.width/5, app.height/10, app.width/5, 
                     app.height/3, fill = None, border = color, borderWidth = 10)
     if app.player1ChoseStatus:
@@ -239,12 +246,12 @@ def characterSelection_redrawAll(app):
     if app.player2ChoseStatus:
         drawLabel('Ready', 675 - 225/2, 575, fill = 'red', size = 30)
     if app.player1Selection == app.player2Selection:
-        drawLabel('You cannot choose the same character!', app.width/2, app.height/2,
-                  fill = 'darkRed', size = 30)
+        drawLabel('You cannot choose the same character!', app.width/2, 
+                  app.height/2, fill = 'darkRed', size = 30)
     drawLabel('Use a and d, left and right to select', app.width/2, 20, 
               fill = 'gold', size = 24)
-    drawLabel('Press enter to g for player 1, j for player 2 to confirm', app.width/2, 
-              45, fill = 'gold', size = 24)
+    drawLabel('Press enter to g for player 1, j for player 2 to confirm', 
+              app.width/2, 45, fill = 'gold', size = 24)
         
 
 def characterSelection_onKeyPress(app, key):
@@ -293,20 +300,29 @@ def characterSelection_onStep(app):
 def gameInstruction_redrawAll(app):
     drawImage('../Graphics/Background/gameInstruction.webp', 0, 0,
               width = app.width, height = app.height)
-    drawRect(app.width/8, app.height/8, app.width/8*6, app.height/8*6, fill = 'grey')
+    drawRect(app.width/8, app.height/8, app.width/8*6, app.height/8*6, 
+             fill = 'grey')
     drawLabel('Use w, a, s, d to move player 1', app.width/2, 100, size = 20)
-    drawLabel('Use up, left, down, right to move player 2', app.width/2, 130, size = 20)
-    drawImage('../Graphics/instruction/walk.png', app.width/2, 180, align = 'center')
+    drawLabel('Use up, left, down, right to move player 2', app.width/2, 130, 
+              size = 20)
+    drawImage('../Graphics/instruction/walk.png', app.width/2, 180, 
+              align = 'center')
     drawLabel('Use e to shoot, g to attack, h to defend and f to antidefend', 
               app.width/2, 230, size = 20)
     drawLabel('Use enter to shoot, l to attack, ":" to defend and k to antidefend', 
               app.width/2,260, size = 20)
-    drawImage('../Graphics/instruction/attack.png', app.width/4, 330, align = 'center')
-    drawImage('../Graphics/instruction/defend.png', app.width/4*2, 330, align = 'center')
-    drawImage('../Graphics/instruction/antiDefend.png', app.width/4*3, 330, align = 'center')
-    drawLabel('Health Bar indicate how many lives left', app.width/2, 400, size = 20)
-    drawImage('../Graphics/instruction/healthBar.png', app.width/2, 450, align = 'center')
-    drawLabel('Press any button to enter fighting field', app.width/2, 500, size = 30)
+    drawImage('../Graphics/instruction/attack.png', app.width/4, 330, 
+              align = 'center')
+    drawImage('../Graphics/instruction/defend.png', app.width/4*2, 330, 
+              align = 'center')
+    drawImage('../Graphics/instruction/antiDefend.png', app.width/4*3, 330, 
+              align = 'center')
+    drawLabel('Health Bar indicate how many lives left', app.width/2, 400, 
+              size = 20)
+    drawImage('../Graphics/instruction/healthBar.png', app.width/2, 450, 
+              align = 'center')
+    drawLabel('Press any button to enter fighting field', app.width/2, 500, 
+              size = 30)
 
 def gameInstruction_onKeyPress(app, key):
     setActiveScreen('game')
@@ -315,7 +331,8 @@ def gameInstruction_onKeyPress(app, key):
 
 def game_redrawAll(app):
     # Draw Background
-    drawImage(app.selectedField.image, 0, 0, width = app.width, height = app.height)
+    drawImage(app.selectedField.image, 0, 0, width = app.width, 
+              height = app.height)
     drawField(app)
     drawInstruction(app)
     drawPlayer(app, app.player1, app.player1AntiDefInd, app.player1AttackInd,
@@ -333,9 +350,11 @@ def drawButton(app):
         drawRect(app.width/3, app.height/4, app.width/3, app.height/2, 
                  fill = 'grey')
         drawLabel('Resume', app.width/2, app.height/4+80, size = 40)
-        drawRect(app.width/2, app.height/4+80, 200, 50, fill = None, border = 'black', align = 'center')
+        drawRect(app.width/2, app.height/4+80, 200, 50, fill = None, 
+                 border = 'black', align = 'center')
         drawLabel('Restart', app.width/2, app.height/4+200, size = 40)
-        drawRect(app.width/2, app.height/4+200, 200, 50, fill = None, border = 'black', align = 'center')
+        drawRect(app.width/2, app.height/4+200, 200, 50, fill = None, 
+                 border = 'black', align = 'center')
   
 # Draw the fighting field
 def drawField(app):
@@ -346,24 +365,31 @@ def drawField(app):
 def drawInstruction(app):
     # Gameover:
     if app.gameOver == True:
-        drawLabel('Press r to restart', app.width/2, app.height/2+50, fill = 'red', size = 40)
+        drawLabel('Press r to restart', app.width/2, app.height/2+50, 
+                  fill = 'red', size = 40)
         if app.aiMode == True:
             if app.player2.health == 0.1:
-                drawLabel('You Win!', app.width/2, app.height/2, fill = 'red', size = 40)
+                drawLabel('You Win!', app.width/2, app.height/2, fill = 'red', 
+                          size = 40)
             else:
-                drawLabel('You Lose', app.width/2, app.height/2, fill = 'red', size = 40)
+                drawLabel('You Lose', app.width/2, app.height/2, fill = 'red', 
+                          size = 40)
         else:
             if app.player1.health == 0.1:
-                drawLabel('Player2 Win!', app.width/2, app.height/2, fill = 'red', size = 40)
+                drawLabel('Player2 Win!', app.width/2, app.height/2, 
+                          fill = 'red', size = 40)
             else:
-                drawLabel('Player1 Win!', app.width/2, app.height/2, fill = 'red', size = 40)
+                drawLabel('Player1 Win!', app.width/2, app.height/2, 
+                          fill = 'red', size = 40)
 
 def drawPlayerHealth(app):
     #Draw Player 1 lives left
     headDim1 = getImageSize(app.player1.headLoc)
     # Background
-    drawRect(0, app.height - headDim1[1]*1.5, 200, headDim1[1]*1.5, fill = 'purple')
-    drawLabel(f'{app.player1.name}', 70, app.height - 60, fill = 'purple', size = 20)
+    drawRect(0, app.height - headDim1[1]*1.5, 200, headDim1[1]*1.5, 
+             fill = 'purple')
+    drawLabel(f'{app.player1.name}', 70, app.height - 60, fill = 'purple', 
+              size = 20)
     drawRect(headDim1[0]*1.5, app.height - headDim1[1]*1.5 + 5,
              app.player1.health/5*150+0.1, headDim1[1]*1.5 - 10, fill = 'red',
              border = 'silver', borderWidth = 2)
@@ -371,11 +397,12 @@ def drawPlayerHealth(app):
     drawImage(app.player1.headLoc, 0, app.height - headDim1[1]*1.5, 
               width = headDim1[0]*1.5, height = headDim1[1]*1.5)
     #Draw Player 2 lives left
-    drawLabel(f'{app.player2.name}', app.width - 70, app.height - 40, fill = 'blue')
+    drawLabel(f'{app.player2.name}', app.width - 70, app.height - 40, 
+              fill = 'blue')
     headDim2 = getImageSize(app.player1.headLoc)
     # Background
-    drawRect(app.width - 200, app.height - headDim2[1]*1.5, 200, headDim2[1]*1.5, 
-             fill = 'blue')
+    drawRect(app.width - 200, app.height - headDim2[1]*1.5, 200, 
+             headDim2[1]*1.5, fill = 'blue')
     drawLabel(f'{app.player2.name}', app.width - 70, app.height - 60,
               fill = 'blue', size = 20)
     drawRect(app.width - headDim2[0]*1.5 - (app.player2.health/5*150), 
@@ -389,7 +416,8 @@ def drawPlayerHealth(app):
               app.height - headDim2[1]*1.5, 
               width = headDim2[0]*1.5, height = headDim2[1]*1.5)
 
-def drawPlayer(app, player, playerAntiDefInd, playerAttackInd, playerWalkInd, playerStandInd):
+def drawPlayer(app, player, playerAntiDefInd, playerAttackInd, playerWalkInd, 
+               playerStandInd):
     if player.direction == 'left': #Direction Left
         if player.antiDefendAni:
             imageDimension = getImageSize(player.antiLDefSprite[playerAntiDefInd])
@@ -400,7 +428,8 @@ def drawPlayer(app, player, playerAntiDefInd, playerAttackInd, playerWalkInd, pl
                       width = imageWidth, height = imageHeight,
                       align = 'center')
         elif player.defend:
-            drawCircle(player.x, player.y, 30, fill = 'red', opacity = 20, border = 'silver')
+            drawCircle(player.x, player.y, 30, fill = 'red', opacity = 20, 
+                       border = 'silver')
             drawImage(player.lDefLoc, player.x, player.y, align = 'center')
         elif player.attackAni:
             imageDimension = getImageSize(player.lAttackSprite[playerAttackInd])
@@ -427,7 +456,8 @@ def drawPlayer(app, player, playerAntiDefInd, playerAttackInd, playerWalkInd, pl
                       width = imageWidth, height = imageHeight,
                       align = 'center')
         elif player.defend:
-            drawCircle(player.x, player.y, 30, fill = 'red', opacity = 20, border = 'silver')
+            drawCircle(player.x, player.y, 30, fill = 'red', opacity = 20, 
+                       border = 'silver')
             drawImage(player.rDefLoc, player.x, player.y, align = 'center')
         elif player.attackAni:
             imageDimension = getImageSize(player.rAttackSprite[app.player1AttackInd])
@@ -580,6 +610,7 @@ def game_onStep(app):
             boundedMotion(app)
             deterAtt(app)
             bloodFixed(app)
+            print(app.player1.x, app.player1.y)
             app.counter += 1
 
 # Prevent bugs where health bar can go non-positive
@@ -638,8 +669,10 @@ def attackCD(app):
 def spriteInd(app):
     if app.counter % 2 == 0:
         #Player1 Sprite
-        app.player1StandInd = (app.player1StandInd + 1) % len(app.player1.rStandSprite)
-        app.player1WalkInd = (app.player1WalkInd + 1) % len(app.player1.rWalkSprite)
+        app.player1StandInd = ((app.player1StandInd + 1) 
+                               % len(app.player1.rStandSprite))
+        app.player1WalkInd = ((app.player1WalkInd + 1) 
+                              % len(app.player1.rWalkSprite))
         if app.player1.attackAni:
             if app.player1AttackInd == len(app.player1.rAttackSprite)-1:
                 app.player1.attack = False
@@ -649,8 +682,10 @@ def spriteInd(app):
             app.player1AttackInd += 1
 
         #Player2 Sprite
-        app.player2StandInd = (app.player2StandInd + 1) % len(app.player2.rStandSprite)
-        app.player2WalkInd = (app.player2WalkInd + 1) % len(app.player2.rWalkSprite)
+        app.player2StandInd = ((app.player2StandInd + 1) 
+                               % len(app.player2.rStandSprite))
+        app.player2WalkInd = ((app.player2WalkInd + 1) 
+                              % len(app.player2.rWalkSprite))
         if app.player2.attackAni:
             if app.player2AttackInd == len(app.player2.rAttackSprite)-1:
                 app.player2.attack = False
@@ -770,7 +805,8 @@ def walkMot(app):
 
 # Whether the character stands on the block
 def onBlock(player, block):
-    if block.x - player.sizeX/2 < player.x < block.x + block.sizeX + player.sizeX/2:
+    if (block.x - player.sizeX/2 < player.x 
+        < block.x + block.sizeX + player.sizeX/2):
         if (block.y + player.dy - player.sizeY/2 >= player.y 
             >= block.y - player.sizeY/2): #The player.dy is used to correct error off by 2-3 pixels
             return True
@@ -778,8 +814,10 @@ def onBlock(player, block):
 
 # Whether the character hits the bottom of the block
 def downBlock(player, block):
-    if block.x - player.sizeX/2 <= player.x <= block.x + block.sizeX + player.sizeX/2:
-        if block.y+block.sizeY+player.dy <= player.y-player.sizeY/2 <= block.y+block.sizeY:
+    if (block.x - player.sizeX/2 <= player.x 
+        <= block.x + block.sizeX + player.sizeX/2):
+        if (block.y+block.sizeY+player.dy <= player.y-player.sizeY/2 
+            <= block.y+block.sizeY):
             return True
     return False
 
