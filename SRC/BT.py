@@ -141,7 +141,7 @@ def btAiPlayer(app):
         return 'Failure'
     
     def finClosJumpPoi(app):
-        if closetPoint(app) is not None and not app.player2.jump:
+        if closetPoint(app) is not None and not app.player1.jump:
             app.closetJumpPoint = closetPoint(app)
         return 'Success'
     
@@ -187,6 +187,7 @@ def btAiPlayer(app):
                 return "Running"
         else:
             return "Running"
+        
         
 
     #Node 2

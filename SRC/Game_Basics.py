@@ -91,10 +91,10 @@ def AiSelection_redrawAll(app):
                  align = 'center', border = 'red', borderWidth = 2)
     drawLabel('Multi-player', app.width/4, app.height/2, fill = 'blue', size=36)
     drawLabel('AI Mode', app.width/4*3, app.height/2, fill = 'red', size=36)
-    drawLabel('Use a and d, left and right to select', app.width/2, 450, 
+    drawLabel('Use a and d, left and right to select', app.width/2, 100, 
               fill = 'gold', size = 36)
     drawLabel('Press enter to confirm selection', app.width/2, 
-              525, fill = 'gold', size = 36)
+              150, fill = 'gold', size = 36)
 
 def AiSelection_onKeyPress(app, key):
     if key == 'right' or key == 'd':
@@ -602,7 +602,7 @@ def game_onStep(app):
     if not app.gameOver:
         if not app.pause:
             if app.aiMode == True:
-                print(BT.btAiPlayer(app).tick())
+                BT.btAiPlayer(app).tick()
             deterGameOver(app)
             gravSimul(app)
             bulletFly(app)
