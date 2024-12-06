@@ -38,12 +38,12 @@ def btAiPlayer(app):
             app.player2.shootChr()
         return 'Success'
 
-    def actualJump(app):
-        if app.player2.jump == False:
-            app.player2.jumpChr()
-            return 'Success'
-        else:
-            return 'Failure'
+    # def actualJump(app):
+    #     if app.player2.jump == False:
+    #         app.player2.jumpChr()
+    #         return 'Success'
+    #     else:
+    #         return 'Failure'
         
     def sameHeight(app):
         if app.player1.y == app.player2.y:
@@ -76,8 +76,6 @@ def btAiPlayer(app):
     jumpShoot = BT_Composite.Sequence('jumpShoot')
     #Node 1221
     deterJum = BT_Behavior.Condition(deterJump, 'deterJum', app)
-    #Node 1222
-    actualJum = BT_Behavior.Action(actualJump, 'actualJum', app)
     #Composite Node 1223
     jumpShootTime = BT_Composite.Sequence('jumpShootTime')
     #Node 12221
@@ -89,7 +87,6 @@ def btAiPlayer(app):
     plainShoot.add(actualSho)
 
     jumpShoot.add(deterJum)
-    jumpShoot.add(actualJum)
 
     jumpShootTime.add(sameHei)
     jumpShootTime.add(actualSho)
@@ -137,6 +134,60 @@ def btAiPlayer(app):
                 app.player2.walk = True
                 app.player2.direction = 'right'
             return 'Running'
+    
+    def humanPlaHigher(app):
+        if app.player1.y < app.player2.y:
+            return 'Success'
+        return 'Failure'
+    
+    def finClosJumpPoi(app):
+        if closetPoint(app) is not None and not app.player2.jump:
+            app.closetJumpPoint = closetPoint(app)
+        return 'Success'
+    
+    def closetPoint(app):
+        smallestDis = 1000
+        closetJumPoint = None
+        for point in app.selectedField.jumpPoint:
+            if point.y == app.player2.y:
+                if abs(app.player1.x - point.x) < smallestDis:
+                    closetJumPoint = point
+                    smallestDis = abs(app.player1.x - point.x)
+        return closetJumPoint
+    
+    def goClosJumpPoi(app):
+        if app.closetJumpPoint is None:
+            return 'Failure'
+        if (app.closetJumpPoint.x - 2.5 < app.player2.x 
+            < app.closetJumpPoint.x + 2.5):
+            return 'Success'
+        elif app.closetJumpPoint.x > app.player2.x:
+            app.player2.dx = 5
+            app.player2.direction = 'right'
+            app.player2.walk = True
+            return 'Running'
+        elif app.closetJumpPoint.x < app.player2.x:
+            app.player2.dx = -5
+            app.player2.direction = 'left'
+            app.player2.walk = True
+            return 'Running'
+            
+    
+    def jumpLevel(app):
+        if not app.player2.jump:
+            if app.closetJumpPoint.direction == 'right':
+                app.player2.direction = 'right'
+                app.player2.dx = 5
+                app.player2.jumpChr()
+                return "Running"
+            elif app.closetJumpPoint.direction == 'left':
+                app.player2.direction = 'left'
+                app.player2.dx = -5
+                app.player2.jumpChr()
+                return "Running"
+        else:
+            return "Running"
+        
 
     #Node 2
     attackLogic = BT_Composite.Sequence('attackLogic')
@@ -150,15 +201,29 @@ def btAiPlayer(app):
     attackRan = BT_Behavior.Condition(attackRange, 'attackRan', app)
     #Node 2212
     actualAtt = BT_Behavior.Condition(actualAttack, 'actualAtt', app)
-    #Node222
-    moveAtt = BT_Composite.Sequence('moveAtt')
+    #Node 222
+    moveAtt = BT_Composite.Selector('moveAtt')
     #Node 2221
-    towardEne = BT_Behavior.Action(towardEnemy, 'towardEne', app)
+    jumpPoint = BT_Composite.Sequence('jumpPoints')
+    #Node 22211
+    humanPlaHigh = BT_Behavior.Condition(humanPlaHigher, 'humanPlaHigh', app)
+    #Node 22212
+    finClosJumpPoint = BT_Behavior.Condition(finClosJumpPoi, 'finClosJumpPoint',
+                                             app)
+    #Node 22213
+    goClosJumpPoint = BT_Behavior.Action(goClosJumpPoi, 'goClosJumpPoint',
+                                         app)
+    #Node 22214
+    jumpLevelHi = BT_Behavior.Action(jumpLevel, 'jumpLevelHi', app)
     #Node 2222
-    directAtt1 = BT_Composite.Sequence('direct1Att')
+    towardAtt = BT_Composite.Sequence('towardAtt')
     #Node 22221
-    attackRan1 = BT_Behavior.Condition(attackRange, 'attackRan1', app)
+    towardEne = BT_Behavior.Action(towardEnemy, 'towardEne', app)
     #Node 22222
+    directAtt1 = BT_Composite.Sequence('direct1Att')
+    #Node 222221
+    attackRan1 = BT_Behavior.Condition(attackRange, 'attackRan1', app)
+    #Node 222222
     actualAtt1 = BT_Behavior.Condition(actualAttack, 'actualAtt1', app)
 
 
@@ -169,8 +234,14 @@ def btAiPlayer(app):
     directAtt.add(attackRan)
     directAtt.add(actualAtt)
     directMoveAtt.add(moveAtt)
-    moveAtt.add(towardEne)
-    moveAtt.add(directAtt1)
+    moveAtt.add(jumpPoint)
+    moveAtt.add(towardAtt)
+    jumpPoint.add(humanPlaHigh)
+    jumpPoint.add(finClosJumpPoint)
+    jumpPoint.add(goClosJumpPoint)
+    jumpPoint.add(jumpLevelHi)
+    towardAtt.add(towardEne)
+    towardAtt.add(directAtt1)
     directAtt1.add(attackRan1)
     directAtt1.add(actualAtt1)
 

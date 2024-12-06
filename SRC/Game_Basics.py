@@ -56,6 +56,8 @@ def reStart(app):
     #Bullet Fly
     app.bulletRightInd = 0
     app.bulletLeftInd = 0
+    #Jump points:
+    app.closetJumpPoint = None
 
 
 
@@ -600,7 +602,7 @@ def game_onStep(app):
     if not app.gameOver:
         if not app.pause:
             if app.aiMode == True:
-                BT.btAiPlayer(app).tick()
+                print(BT.btAiPlayer(app).tick())
             deterGameOver(app)
             gravSimul(app)
             bulletFly(app)
@@ -612,7 +614,6 @@ def game_onStep(app):
             boundedMotion(app)
             deterAtt(app)
             bloodFixed(app)
-            print(app.player1.x, app.player1.y)
             app.counter += 1
 
 # Prevent bugs where health bar can go non-positive

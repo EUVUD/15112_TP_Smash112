@@ -4,6 +4,7 @@ class Field:
         self.name = name
         self.blocks = []
         self.image = image
+        self.jumpPoint = []
 
     def __repr__(self):
         return f'{self.blocks}'
@@ -31,17 +32,18 @@ class Block:
 
 def fieldSetUp(app):
     # Field 1
-    app.defaultField = Field('City', '../Graphics/Background/10615.png')
+    app.field1 = Field('City', '../Graphics/Background/10615.png')
     # Blocks
     app.ground = Block('ground', 0, app.height/4*3, app.width, 
                        app.height - app.height/4*3, 'black')
     app.level1 = Block('level1', app.width/4*3, 300, 100, 20, 'black')
     app.level2 = Block('level2', app.width/6, 300, 100, 20, 'black')
     app.level3 = Block('level3', app.width/3, 150, 300, 20, 'black')
-    app.defaultField.add(app.ground)
-    app.defaultField.add(app.level1)
-    app.defaultField.add(app.level2)
-    app.defaultField.add(app.level3)
+    app.field1.add(app.ground)
+    app.field1.add(app.level1)
+    app.field1.add(app.level2)
+    app.field1.add(app.level3)
+    app.field1.jumpPoint = cityJumpPoints()
 
     # Field 2
     app.field2 = Field('Mountain', '../Graphics/Background/mountain.png')
@@ -57,6 +59,7 @@ def fieldSetUp(app):
     app.field2.add(app.leftSideStand)
     app.field2.add(app.rightSideStand)
     app.field2.add(app.middleStand)
+    app.field2.jumpPoint = mountainJumpPoints()
 
     #Field 3
     app.field3 = Field('Volcano', '../Graphics/Background/volcano.png')
@@ -69,6 +72,7 @@ def fieldSetUp(app):
     app.field3.add(app.pyramidBottom)
     app.field3.add(app.pyramidMiddle)
     app.field3.add(app.pyramidTop)
+    app.field3.jumpPoint = volcanoJumpPoints()
 
     #Field 4
     app.field4 = Field('Power of Nature', 
@@ -82,13 +86,14 @@ def fieldSetUp(app):
     app.field4.add(app.shortLevel)
     app.field4.add(app.middleLevel)
     app.field4.add(app.upperLevel)
+    app.field4.jumpPoint = natureJumpPoints()
 
 
 
 
 def fieldList(app):
     app.fields = [[None, None], [None, None]]
-    app.fields[0][0] = app.defaultField
+    app.fields[0][0] = app.field1
     app.fields[0][1] = app.field2
     app.fields[1][0] = app.field3
     app.fields[1][1] = app.field4
@@ -99,13 +104,48 @@ class JumpPoints:
         self.y = y
         self.direction = direction
 
-def cityJumpPoints(app):
-    app.cityPoints = []
+def cityJumpPoints():
+    cityPoints = []
     pointGtoLev1 = JumpPoints(281, 428.5, 'left')
     pointLev1toLev3  = JumpPoints(201, 278.5, 'right')
     pointGtoLev2 = JumpPoints(556, 428.5, 'right')
     pointLev2toLev3  = JumpPoints(631, 278.5, 'left')
-    app.cityPoints.append(pointGtoLev1)
-    app.cityPoints.append(pointLev1toLev3)
-    app.cityPoints.append(pointGtoLev2)
-    app.cityPoints.append(pointLev2toLev3)
+    cityPoints.append(pointGtoLev1)
+    cityPoints.append(pointLev1toLev3)
+    cityPoints.append(pointGtoLev2)
+    cityPoints.append(pointLev2toLev3)
+    return cityPoints
+
+def mountainJumpPoints():
+    mountainPoints = []
+    pointGtoLef = JumpPoints(180.5, 483.5, 'left')
+    pointLeftoMid = JumpPoints(125, 378.5, 'right')
+    pointGtoRig = JumpPoints(603, 483.5, 'right')
+    pointRigtoMid = JumpPoints(673, 378.5, 'left')
+    mountainPoints.append(pointGtoLef)
+    mountainPoints.append(pointLeftoMid)
+    mountainPoints.append(pointGtoRig)
+    mountainPoints.append(pointRigtoMid)
+    return mountainPoints
+
+def natureJumpPoints():
+    naturePoints = []
+    pointGtoLev1 = JumpPoints(56.5, 428.5, 'right')
+    pointLev1toLev2 = JumpPoints(271.5, 328.5, 'right')
+    pointLev2toLev3 = JumpPoints(436.5, 228.5, 'right')
+    naturePoints.append(pointGtoLev1)
+    naturePoints.append(pointLev1toLev2)
+    naturePoints.append(pointLev2toLev3)
+    return naturePoints
+
+def volcanoJumpPoints():
+    volcanoPoints = []
+    pointLBotToMid = JumpPoints(146.5, 478.5, 'right')
+    pointLMidToTop = JumpPoints(211.5, 328.5, 'right')
+    pointRMidToTop = JumpPoints(581.8, 328.5, 'left')
+    pointRBotToMid = JumpPoints(648.5, 478.5, 'left')
+    volcanoPoints.append(pointLBotToMid)
+    volcanoPoints.append(pointLMidToTop)
+    volcanoPoints.append(pointRMidToTop)
+    volcanoPoints.append(pointRBotToMid)
+    return volcanoPoints
