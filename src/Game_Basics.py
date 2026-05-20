@@ -123,10 +123,10 @@ def fieldSelection_redrawAll(app):
               size = 22)
     drawBoard(app)
     drawBoardBorder(app)
-    drawLabel('Use wasd and up,left, down, right to select', app.width/2, 500, 
+    drawLabel('Use "wasd" and up, left, down, right to select', app.width/2, 25, 
               fill = 'gold', size = 36)
     drawLabel('Press enter to confirm selection', app.width/2, 
-              550, fill = 'gold', size = 36)
+              75, fill = 'gold', size = 36)
 
 def drawLargView(app):
     currRow, currCol = app.fieldSelection[0], app.fieldSelection[1]
