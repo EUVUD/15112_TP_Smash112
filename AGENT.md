@@ -37,7 +37,7 @@ There is no requirements file yet. If adding one, keep it minimal and include `c
 - `src/BT_Composite.py`: `Selector` and `Sequence` composite node implementations.
 - `src/BT_Behavior.py`: `Condition` and `Action` behavior node wrappers.
 - `Graphics/`: Character, background, projectile, and instruction assets.
-- `AI_Resources/`: Reference material for behavior trees.
+- `docs/ai_resources/`: Reference material for behavior trees.
 
 ## Behavior Tree Notes
 

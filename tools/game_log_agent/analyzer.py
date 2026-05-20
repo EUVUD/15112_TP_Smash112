@@ -9,7 +9,10 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-from report_generator import generate_markdown_report
+try:
+    from .report_generator import generate_markdown_report
+except ImportError:
+    from report_generator import generate_markdown_report
 
 
 MOVE_ACTIONS = {
