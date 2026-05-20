@@ -1,0 +1,21 @@
+[
+  {
+    "time": 10,
+    "actor": "player2",
+    "x": 620,
+    "y": 457,
+    "health": 1,
+    "action": "stand",
+    "event": "before_damage"
+  },
+  {
+    "time": 11,
+    "actor": "player2",
+    "x": 620,
+    "y": 457,
+    "health": -1,
+    "action": "hit_stun",
+    "event": "projectile_hit",
+    "damage_applied": 2
+  }
+]

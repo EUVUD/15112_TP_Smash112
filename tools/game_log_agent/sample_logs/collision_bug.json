@@ -1,0 +1,38 @@
+[
+  {
+    "time": 40,
+    "actor": "player2",
+    "x": 248,
+    "y": 350,
+    "health": 5,
+    "action": "move_left",
+    "event": "collision_error",
+    "dx": -5,
+    "dy": 0,
+    "field": "Pyramid"
+  },
+  {
+    "time": 41,
+    "actor": "player2",
+    "x": 248,
+    "y": 350,
+    "health": 5,
+    "action": "move_left",
+    "event": "collision_error",
+    "dx": -5,
+    "dy": 0,
+    "field": "Pyramid"
+  },
+  {
+    "time": 42,
+    "actor": "player2",
+    "x": 248,
+    "y": 350,
+    "health": 5,
+    "action": "move_left",
+    "event": "collision_error",
+    "dx": -5,
+    "dy": 0,
+    "field": "Pyramid"
+  }
+]

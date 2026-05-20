@@ -1,0 +1,18 @@
+[
+  {
+    "time": 30,
+    "actor": "player1",
+    "target": "player2",
+    "x": 360,
+    "y": 457,
+    "health": 5,
+    "action": "attack",
+    "event": "attack_hit",
+    "hit_confirmed": true,
+    "damage_expected": 1,
+    "damage_applied": 0,
+    "target_health_before": 4,
+    "target_health_after": 4,
+    "target_defending": false
+  }
+]

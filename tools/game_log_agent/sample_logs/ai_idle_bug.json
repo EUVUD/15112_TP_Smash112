@@ -1,0 +1,54 @@
+[
+  {
+    "time": 20,
+    "actor": "player2",
+    "controller": "ai",
+    "x": 580,
+    "y": 457,
+    "health": 5,
+    "action": "idle",
+    "event": "ai_tick",
+    "dx": 0,
+    "dy": 0,
+    "player_distance": 220
+  },
+  {
+    "time": 21,
+    "actor": "player2",
+    "controller": "ai",
+    "x": 580,
+    "y": 457,
+    "health": 5,
+    "action": "idle",
+    "event": "ai_tick",
+    "dx": 0,
+    "dy": 0,
+    "player_distance": 215
+  },
+  {
+    "time": 22,
+    "actor": "player2",
+    "controller": "ai",
+    "x": 580,
+    "y": 457,
+    "health": 5,
+    "action": "idle",
+    "event": "ai_tick",
+    "dx": 0,
+    "dy": 0,
+    "player_distance": 210
+  },
+  {
+    "time": 23,
+    "actor": "player2",
+    "controller": "ai",
+    "x": 580,
+    "y": 457,
+    "health": 5,
+    "action": "idle",
+    "event": "ai_tick",
+    "dx": 0,
+    "dy": 0,
+    "player_distance": 205
+  }
+]

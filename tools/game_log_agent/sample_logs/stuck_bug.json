@@ -1,0 +1,50 @@
+[
+  {
+    "time": 1,
+    "actor": "player1",
+    "x": 112,
+    "y": 457,
+    "health": 5,
+    "action": "move_right",
+    "event": "move",
+    "dx": 5,
+    "dy": 0,
+    "field": "City"
+  },
+  {
+    "time": 2,
+    "actor": "player1",
+    "x": 112,
+    "y": 457,
+    "health": 5,
+    "action": "move_right",
+    "event": "move",
+    "dx": 5,
+    "dy": 0,
+    "field": "City"
+  },
+  {
+    "time": 3,
+    "actor": "player1",
+    "x": 112,
+    "y": 457,
+    "health": 5,
+    "action": "move_right",
+    "event": "collision_error",
+    "dx": 5,
+    "dy": 0,
+    "field": "City"
+  },
+  {
+    "time": 4,
+    "actor": "player1",
+    "x": 112,
+    "y": 457,
+    "health": 5,
+    "action": "move_right",
+    "event": "move",
+    "dx": 5,
+    "dy": 0,
+    "field": "City"
+  }
+]

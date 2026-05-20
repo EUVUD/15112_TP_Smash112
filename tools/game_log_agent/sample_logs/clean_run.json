@@ -1,0 +1,53 @@
+[
+  {
+    "time": 1,
+    "actor": "player1",
+    "x": 120,
+    "y": 457,
+    "health": 5,
+    "action": "move_right",
+    "event": "move",
+    "dx": 5,
+    "dy": 0
+  },
+  {
+    "time": 2,
+    "actor": "player1",
+    "x": 125,
+    "y": 457,
+    "health": 5,
+    "action": "move_right",
+    "event": "move",
+    "dx": 5,
+    "dy": 0
+  },
+  {
+    "time": 3,
+    "actor": "player2",
+    "controller": "ai",
+    "x": 600,
+    "y": 457,
+    "health": 5,
+    "action": "approach",
+    "event": "ai_tick",
+    "dx": -5,
+    "dy": 0,
+    "player_distance": 160
+  },
+  {
+    "time": 4,
+    "actor": "player1",
+    "target": "player2",
+    "x": 350,
+    "y": 457,
+    "health": 5,
+    "action": "attack",
+    "event": "attack_hit",
+    "hit_confirmed": true,
+    "damage_expected": 1,
+    "damage_applied": 1,
+    "target_health_before": 5,
+    "target_health_after": 4,
+    "target_defending": false
+  }
+]
