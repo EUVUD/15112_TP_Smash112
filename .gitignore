@@ -3,3 +3,4 @@ proposal.pdf
 video-demo.txt
 *.pyc
 *.DS_Store
+__pycache__
