@@ -36,6 +36,33 @@ Print raw rule findings:
 python3 tools/game_log_agent/analyzer.py tools/game_log_agent/sample_logs/health_bug.json --json
 ```
 
+## Generate Logs From Real Gameplay
+
+The live game now records structured gameplay events during a match. Run the
+game from `src` as usual:
+
+```bash
+cd src
+python3 Game_Basics.py
+```
+
+During a match:
+
+- Press `o` to manually export the current gameplay log.
+- When a round ends, the game automatically exports the log.
+
+The latest real gameplay log is written to:
+
+```text
+tools/game_log_agent/generated_logs/latest_game_log.json
+```
+
+Analyze it from the repository root:
+
+```bash
+python3 tools/game_log_agent/analyzer.py tools/game_log_agent/generated_logs/latest_game_log.json --print
+```
+
 ## Rules
 
 - `detect_stuck_player`: character tries to move but position stays unchanged.

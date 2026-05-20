@@ -5,10 +5,17 @@
 #https://www.iconpacks.net/free-icon/settings-3110.html
 #Part of CS Academy Code is used for field selection
 
+import json
+from pathlib import Path
+
 from cmu_graphics import *
 import Game_Char
 import Game_Field
 import BT
+
+GAME_LOG_DIR = Path(__file__).resolve().parents[1] / 'tools' / 'game_log_agent' / 'generated_logs'
+GAME_LOG_PATH = GAME_LOG_DIR / 'latest_game_log.json'
+MAX_GAME_LOG_EVENTS = 5000
 
 def onAppStart(app):
     app.width = 800
@@ -28,6 +35,7 @@ def reStart(app):
     app.aiMode = None
     app.selectCounter = 0
     app.counter = 0
+    initGameLog(app)
     #FieldSelection Page
     Game_Field.fieldSetUp(app)
     Game_Field.fieldList(app)
@@ -58,6 +66,118 @@ def reStart(app):
     app.bulletLeftInd = 0
     #Jump points:
     app.closetJumpPoint = None
+
+
+def initGameLog(app):
+    app.gameLog = []
+    app.gameLogPath = None
+    app.gameLogExported = False
+
+
+def logGameEvent(app, actor, player, eventName, action = None, **extra):
+    if not hasattr(app, 'gameLog') or len(app.gameLog) >= MAX_GAME_LOG_EVENTS:
+        return
+
+    entry = {
+        'time': getattr(app, 'counter', 0),
+        'actor': actor,
+        'event': eventName,
+        'action': action if action is not None else inferLogAction(player),
+        'ai_mode': getattr(app, 'aiMode', None),
+        'field': selectedFieldName(app),
+    }
+
+    if player is not None:
+        entry.update({
+            'character': player.name,
+            'controller': playerController(app, actor),
+            'x': player.x,
+            'y': player.y,
+            'health': player.health,
+            'dx': player.dx,
+            'dy': player.dy,
+            'direction': player.direction,
+            'jump': player.jump,
+            'walk': player.walk,
+            'attack': player.attack,
+            'defend': player.defend,
+            'anti_defend': player.antiDefend,
+            'attack_cd': player.attackCD,
+            'shuri_cd': player.shuriCD,
+            'anti_def_cd': player.antiDefCD,
+        })
+
+    if app.player1 is not None and app.player2 is not None:
+        entry['player_distance'] = distance(app.player1.x, app.player1.y,
+                                            app.player2.x, app.player2.y)
+
+    entry.update(extra)
+    app.gameLog.append(entry)
+
+
+def logFrameSnapshot(app):
+    if app.player1 is not None:
+        logGameEvent(app, 'player1', app.player1, 'state_snapshot')
+    if app.player2 is not None:
+        eventName = 'ai_tick' if app.aiMode == True else 'state_snapshot'
+        logGameEvent(app, 'player2', app.player2, eventName)
+
+
+def exportGameLog(app, reason = 'manual'):
+    if not hasattr(app, 'gameLog'):
+        return None
+    if reason == 'game_over' and app.gameLogExported:
+        return app.gameLogPath
+
+    logGameEvent(app, 'system', None, 'log_export', action = reason,
+                 export_reason = reason)
+    GAME_LOG_DIR.mkdir(parents = True, exist_ok = True)
+    GAME_LOG_PATH.write_text(json.dumps(app.gameLog, indent = 2),
+                             encoding = 'utf-8')
+    app.gameLogPath = str(GAME_LOG_PATH)
+    app.gameLogExported = True
+    print(f'Gameplay log exported to {GAME_LOG_PATH}')
+    return app.gameLogPath
+
+
+def inferLogAction(player):
+    if player is None:
+        return 'system'
+    if player.attack:
+        return 'attack'
+    if player.antiDefend:
+        return 'anti_defend'
+    if player.defend:
+        return 'defend'
+    if player.jump and player.dy != 0:
+        return 'jump'
+    if player.walk or player.dx != 0:
+        if player.dx < 0:
+            return 'move_left'
+        elif player.dx > 0:
+            return 'move_right'
+        return 'move'
+    return 'idle'
+
+
+def playerController(app, actor):
+    if actor == 'player2' and app.aiMode == True:
+        return 'ai'
+    return 'human'
+
+
+def playerLogName(app, player):
+    if player is app.player1:
+        return 'player1'
+    if player is app.player2:
+        return 'player2'
+    return 'player'
+
+
+def selectedFieldName(app):
+    if getattr(app, 'selectedField', None) is None:
+        return None
+    return app.selectedField.name
 
 
 
@@ -492,6 +612,10 @@ def drawBullet(app):
                       align = 'center')
 
 def game_onKeyPress(app, key):
+    if key == 'o':
+        exportGameLog(app, reason = 'manual')
+        return
+
     if not app.gameOver:
         #Jump
         if not app.pause:
@@ -500,25 +624,49 @@ def game_onKeyPress(app, key):
                 if key == 'w':
                     if app.player1.jump == False:
                         app.player1.jumpChr()
+                        logGameEvent(app, 'player1', app.player1,
+                                     'input_action', action = 'jump',
+                                     input = key)
                 #Shoot the bullet
                 if key == 'e' and app.player1.shuriCD == 0:
                     app.player1.shootChr()
+                    logGameEvent(app, 'player1', app.player1,
+                                 'input_action', action = 'shoot',
+                                 input = key)
                 elif key == 'g' and app.player1.attackCD == 0:
                     app.player1.attackChr()
+                    logGameEvent(app, 'player1', app.player1,
+                                 'input_action', action = 'attack',
+                                 input = key)
                 elif key == 'f' and app.player1.antiDefCD == 0:
                     app.player1.antiDefendChr()
+                    logGameEvent(app, 'player1', app.player1,
+                                 'input_action', action = 'anti_defend',
+                                 input = key)
                     
             # Player2 Action
             if not app.player2.defend:
                 if key == 'up':
                     if app.player2.jump == False:
                         app.player2.jumpChr()
+                        logGameEvent(app, 'player2', app.player2,
+                                     'input_action', action = 'jump',
+                                     input = key)
                 if key == 'enter' and app.player2.shuriCD == 0:
                     app.player2.shootChr()
+                    logGameEvent(app, 'player2', app.player2,
+                                 'input_action', action = 'shoot',
+                                 input = key)
                 elif key == 'k' and app.player2.attackCD == 0:
                     app.player2.attackChr()
+                    logGameEvent(app, 'player2', app.player2,
+                                 'input_action', action = 'attack',
+                                 input = key)
                 elif key == ';' and app.player2.antiDefCD == 0:
                     app.player2.antiDefendChr()
+                    logGameEvent(app, 'player2', app.player2,
+                                 'input_action', action = 'anti_defend',
+                                 input = key)
 
                 
     #Restart the game
@@ -614,40 +762,88 @@ def game_onStep(app):
             boundedMotion(app)
             deterAtt(app)
             bloodFixed(app)
+            logFrameSnapshot(app)
             app.counter += 1
 
 # Prevent bugs where health bar can go non-positive
 def bloodFixed(app):
     if app.player1.health <= 0:
+        healthBefore = app.player1.health
         app.player1.health = 0.1
+        logGameEvent(app, 'player1', app.player1, 'health_clamped',
+                     action = 'health_clamp', health = healthBefore,
+                     health_before = healthBefore,
+                     health_after = app.player1.health)
     elif app.player2.health <= 0:
+        healthBefore = app.player2.health
         app.player2.health = 0.1
+        logGameEvent(app, 'player2', app.player2, 'health_clamped',
+                     action = 'health_clamp', health = healthBefore,
+                     health_before = healthBefore,
+                     health_after = app.player2.health)
 
 # Determine whether attack deal damage
 def deterAtt(app):
     if (isHit(app.player1, app.player2) and app.player2.attack
                     and not app.player1.defend):
+                    healthBefore = app.player1.health
                     app.player1.health -= 1
                     app.player2.attack = False
+                    logGameEvent(app, 'player2', app.player2, 'attack_hit',
+                                 action = 'attack', target = 'player1',
+                                 hit_confirmed = True, damage_expected = 1,
+                                 damage_applied = healthBefore - app.player1.health,
+                                 target_health_before = healthBefore,
+                                 target_health_after = app.player1.health,
+                                 target_defending = app.player1.defend)
     elif (isHit(app.player1, app.player2) and app.player1.attack
                     and not app.player2.defend):
+                    healthBefore = app.player2.health
                     app.player2.health -= 1
                     app.player1.attack = False
+                    logGameEvent(app, 'player1', app.player1, 'attack_hit',
+                                 action = 'attack', target = 'player2',
+                                 hit_confirmed = True, damage_expected = 1,
+                                 damage_applied = healthBefore - app.player2.health,
+                                 target_health_before = healthBefore,
+                                 target_health_after = app.player2.health,
+                                 target_defending = app.player2.defend)
     elif (isHit(app.player1, app.player2) and app.player2.antiDefend
                     and app.player1.defend):
+                    healthBefore = app.player1.health
                     app.player1.health -= 1
                     app.player1.defend = False
                     app.player2.antiDefend = False
+                    logGameEvent(app, 'player2', app.player2, 'attack_hit',
+                                 action = 'anti_defend', target = 'player1',
+                                 hit_confirmed = True, damage_expected = 1,
+                                 damage_applied = healthBefore - app.player1.health,
+                                 target_health_before = healthBefore,
+                                 target_health_after = app.player1.health,
+                                 target_defending = True)
     elif (isHit(app.player1, app.player2) and app.player1.antiDefend
                     and app.player2.defend):
+                    healthBefore = app.player2.health
                     app.player2.health -= 1
                     app.player2.defend = False
                     app.player1.antiDefend = False
+                    logGameEvent(app, 'player1', app.player1, 'attack_hit',
+                                 action = 'anti_defend', target = 'player2',
+                                 hit_confirmed = True, damage_expected = 1,
+                                 damage_applied = healthBefore - app.player2.health,
+                                 target_health_before = healthBefore,
+                                 target_health_after = app.player2.health,
+                                 target_defending = True)
 
 
 def deterGameOver(app):
     if app.player1.health == 0.1 or app.player2.health == 0.1:
         app.gameOver = True
+        winner = 'player2' if app.player1.health == 0.1 else 'player1'
+        logGameEvent(app, 'system', None, 'game_over', action = 'game_over',
+                     winner = winner, player1_health = app.player1.health,
+                     player2_health = app.player2.health)
+        exportGameLog(app, reason = 'game_over')
 
 # Count all the abilities' CD
 def attackCD(app):
@@ -729,13 +925,29 @@ def boundedMotion(app):
 # Determine if the character hit the left or right most side
 def hitFrame(app):
     if app.player1.x + app.player1.sizeX > app.width: #Bounded Motion
+        xBefore = app.player1.x
         app.player1.x = app.width-app.player1.sizeX
+        logGameEvent(app, 'player1', app.player1, 'collision_error',
+                     collision_side = 'screen_right', x_before = xBefore,
+                     x_after = app.player1.x)
     elif app.player1.x < app.player1.sizeX/2:
+        xBefore = app.player1.x
         app.player1.x = app.player1.sizeX/2
+        logGameEvent(app, 'player1', app.player1, 'collision_error',
+                     collision_side = 'screen_left', x_before = xBefore,
+                     x_after = app.player1.x)
     if app.player2.x + app.player2.sizeX > app.width: #Bounded Motion
+        xBefore = app.player2.x
         app.player2.x = app.width-app.player2.sizeX
+        logGameEvent(app, 'player2', app.player2, 'collision_error',
+                     collision_side = 'screen_right', x_before = xBefore,
+                     x_after = app.player2.x)
     elif app.player2.x < 0:
+        xBefore = app.player2.x
         app.player2.x = 0
+        logGameEvent(app, 'player2', app.player2, 'collision_error',
+                     collision_side = 'screen_left', x_before = xBefore,
+                     x_after = app.player2.x)
     
 # Determine if the character hit the block on left or right side
 def hitBlockRight(app, player):
@@ -744,7 +956,12 @@ def hitBlockRight(app, player):
             <= block.y+block.sizeY+player.sizeY/2):
             if (block.x + block.sizeX - 5 <= player.x - player.sizeX/2 
                 <= block.x + block.sizeX):
+                xBefore = player.x
                 player.x = block.x + block.sizeX + player.sizeX/2
+                logGameEvent(app, playerLogName(app, player), player,
+                             'collision_error', collision_side = 'block_right',
+                             block = block.name, x_before = xBefore,
+                             x_after = player.x)
 
 
 def hitBlockLeft(app, player):
@@ -753,7 +970,12 @@ def hitBlockLeft(app, player):
             <= block.y+block.sizeY+player.sizeY/2):
             if (block.x <= player.x + player.sizeX/2 
                 <= block.x + 5):
+                xBefore = player.x
                 player.x = block.x - player.sizeX/2
+                logGameEvent(app, playerLogName(app, player), player,
+                             'collision_error', collision_side = 'block_left',
+                             block = block.name, x_before = xBefore,
+                             x_after = player.x)
 
 
 
@@ -839,18 +1061,39 @@ def bulletFly(app):
 def bulletHit(app):
     i = 0
     while i < len(app.projection):
-        if (distance(app.projection[i].x, app.projection[i].y, 
+        projectile = app.projection[i]
+        if (distance(projectile.x, projectile.y, 
                      app.player1.x, app.player1.y)
-            < app.projection[i].sizeX/2 + app.player1.sizeX/2):
+            < projectile.sizeX/2 + app.player1.sizeX/2):
+            healthBefore = app.player1.health
             if not app.player1.defend:
                 app.player1.health -= 1
+            logGameEvent(app, 'player2', app.player2, 'projectile_hit',
+                         action = 'shoot', target = 'player1',
+                         hit_confirmed = True, damage_expected = 1,
+                         damage_applied = healthBefore - app.player1.health,
+                         target_health_before = healthBefore,
+                         target_health_after = app.player1.health,
+                         target_defending = app.player1.defend,
+                         projectile_x = projectile.x,
+                         projectile_y = projectile.y)
             app.projection.pop(i)
 
-        elif (distance(app.projection[i].x, app.projection[i].y, 
+        elif (distance(projectile.x, projectile.y, 
                        app.player2.x, app.player2.y)
-            < app.projection[i].sizeX/2 + app.player2.sizeX/2):
+            < projectile.sizeX/2 + app.player2.sizeX/2):
+            healthBefore = app.player2.health
             if not app.player2.defend:
                 app.player2.health -= 1
+            logGameEvent(app, 'player1', app.player1, 'projectile_hit',
+                         action = 'shoot', target = 'player2',
+                         hit_confirmed = True, damage_expected = 1,
+                         damage_applied = healthBefore - app.player2.health,
+                         target_health_before = healthBefore,
+                         target_health_after = app.player2.health,
+                         target_defending = app.player2.defend,
+                         projectile_x = projectile.x,
+                         projectile_y = projectile.y)
             app.projection.pop(i)
         i += 1
 
@@ -868,6 +1111,11 @@ def bulletHitBlock(app):
                 and bottom2 >= app.projection[i].y - app.projection[i].sizeY/2 
                 and right1 >= block.x
                 and right2 >= app.projection[i].x - app.projection[i].sizeX/2):
+                logGameEvent(app, 'system', None, 'projectile_blocked',
+                             action = 'projectile_blocked',
+                             block = block.name,
+                             projectile_x = app.projection[i].x,
+                             projectile_y = app.projection[i].y)
                 app.projection.pop(i)
             i += 1
                 
